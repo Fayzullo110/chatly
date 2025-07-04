@@ -1,5 +1,18 @@
 import React, { useState, useContext } from 'react';
-import { Container, Paper, TextField, Button, Typography, Box, Link, Avatar, InputAdornment, IconButton } from '@mui/material';
+import { 
+  Container, 
+  Paper, 
+  TextField, 
+  Button, 
+  Typography, 
+  Box, 
+  Link, 
+  Avatar, 
+  InputAdornment, 
+  IconButton,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { Email, Lock, Visibility, VisibilityOff, Login as LoginIcon } from '@mui/icons-material';
@@ -31,6 +44,8 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,7 +77,8 @@ function Login() {
       justifyContent: 'center',
       position: 'relative',
       overflow: 'hidden',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      px: isMobile ? 2 : 0
     }}>
       {/* Glassmorphism AppBar */}
       <Box sx={{ width: '100%', zIndex: 10 }}>
@@ -73,16 +89,16 @@ function Login() {
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
           display: 'flex',
           alignItems: 'center',
-          px: 4,
-          py: 2,
+          px: isMobile ? 2 : 4,
+          py: isMobile ? 1.5 : 2,
         }}>
           <Box sx={{
             display: 'flex',
             alignItems: 'center',
             background: 'rgba(255, 255, 255, 0.1)',
             borderRadius: 3,
-            px: 2,
-            py: 1,
+            px: isMobile ? 1.5 : 2,
+            py: isMobile ? 0.5 : 1,
             backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.2)',
             cursor: 'pointer',
@@ -96,20 +112,21 @@ function Login() {
             <Box sx={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)',
               borderRadius: '50%',
-              p: 1,
-              mr: 2,
+              p: isMobile ? 0.5 : 1,
+              mr: isMobile ? 1 : 2,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               backdropFilter: 'blur(10px)',
               animation: `${pulse} 3s ease-in-out infinite`
             }}>
-              <span role="img" aria-label="chat">💬</span>
+              <span role="img" aria-label="chat" style={{ fontSize: isMobile ? '16px' : '20px' }}>💬</span>
             </Box>
-            <Typography variant="h5" component="div" sx={{ 
+            <Typography variant={isMobile ? "h6" : "h5"} component="div" sx={{ 
               fontWeight: 700, 
               color: 'white',
-              textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+              textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              display: { xs: 'none', sm: 'block' }
             }}>
               Chatly
             </Typography>
@@ -122,8 +139,8 @@ function Login() {
         position: 'absolute',
         top: '20%',
         left: '10%',
-        width: 150,
-        height: 150,
+        width: isMobile ? 80 : 150,
+        height: isMobile ? 80 : 150,
         borderRadius: '50%',
         background: 'rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
@@ -134,8 +151,8 @@ function Login() {
         position: 'absolute',
         bottom: '20%',
         right: '10%',
-        width: 100,
-        height: 100,
+        width: isMobile ? 60 : 100,
+        height: isMobile ? 60 : 100,
         borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%',
         background: 'rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
@@ -143,31 +160,35 @@ function Login() {
         zIndex: 1
       }} />
 
-      <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 2 }}>
+      <Container maxWidth="sm" sx={{ 
+        position: 'relative', 
+        zIndex: 2,
+        px: isMobile ? 1 : 3
+      }}>
         <Paper elevation={0} sx={{
-          p: 6,
+          p: isMobile ? 3 : 6,
           background: 'none',
           backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: 4,
+          borderRadius: isMobile ? 3 : 4,
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
           animation: `${pulse} 4s ease-in-out infinite`
         }}>
           {/* Logo and Title */}
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Box sx={{ textAlign: 'center', mb: isMobile ? 3 : 4 }}>
             <Avatar sx={{
-              width: 80,
-              height: 80,
+              width: isMobile ? 60 : 80,
+              height: isMobile ? 60 : 80,
               mx: 'auto',
-              mb: 2,
+              mb: isMobile ? 1.5 : 2,
               background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)',
               backdropFilter: 'blur(10px)',
               border: '2px solid rgba(255, 255, 255, 0.3)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
             }}>
-              <LoginIcon sx={{ fontSize: 40, color: 'white' }} />
+              <LoginIcon sx={{ fontSize: isMobile ? 30 : 40, color: 'white' }} />
             </Avatar>
-            <Typography variant="h3" component="h1" gutterBottom align="center" sx={{
+            <Typography variant={isMobile ? "h4" : "h3"} component="h1" gutterBottom align="center" sx={{
               fontWeight: 700,
               color: 'white',
               textShadow: '0 2px 4px rgba(0,0,0,0.3)',
@@ -175,7 +196,7 @@ function Login() {
             }}>
               Welcome Back
             </Typography>
-            <Typography variant="h6" align="center" sx={{
+            <Typography variant={isMobile ? "body1" : "h6"} align="center" sx={{
               color: 'white',
               opacity: 0.8,
               fontWeight: 300,
@@ -200,8 +221,8 @@ function Login() {
               </Typography>
             </Box>
           )}
-          
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+
+          <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
               label="Email"
@@ -209,54 +230,47 @@ function Login() {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              margin="normal"
               required
+              sx={{
+                mb: 3,
+                '& .MuiOutlinedInput-root': {
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: 2,
+                  '& fieldset': {
+                    border: 'none'
+                  },
+                  '&:hover fieldset': {
+                    border: 'none'
+                  },
+                  '&.Mui-focused fieldset': {
+                    border: '2px solid rgba(255, 255, 255, 0.5)'
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  '&.Mui-focused': {
+                    color: 'white'
+                  }
+                },
+                '& .MuiInputBase-input': {
+                  color: 'white',
+                  '&::placeholder': {
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    opacity: 1
+                  }
+                }
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Email sx={{ color: '#2196f3', fontSize: 28 }} />
+                    <Email sx={{ color: 'rgba(255, 255, 255, 0.6)' }} />
                   </InputAdornment>
-                ),
-                sx: {
-                  fontSize: 20,
-                  color: 'white',
-                  fontWeight: 500,
-                  borderRadius: 3,
-                  background: 'transparent',
-                  boxShadow: '0 4px 32px 0 rgba(255,182,236,0.10)',
-                  backdropFilter: 'blur(16px)',
-                  px: 2,
-                  py: 1.5,
-                  '& .MuiInputBase-input': {
-                    color: 'white',
-                    fontSize: 20,
-                    fontWeight: 500,
-                    letterSpacing: 0.5,
-                    background: 'transparent !important',
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(255,255,255,0.7)',
-                    fontSize: 18,
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 3,
-                    background: 'transparent',
-                    border: '1.5px solid rgba(255,255,255,0.25)',
-                    boxShadow: '0 4px 32px 0 rgba(255,182,236,0.10)',
-                    transition: 'all 0.3s',
-                    '&:hover': {
-                      border: '1.5px solid #ffb6ec',
-                      background: 'transparent',
-                    },
-                    '&.Mui-focused': {
-                      border: '2px solid #ffb6ec',
-                      background: 'transparent',
-                      boxShadow: '0 0 12px 2px #ffb6ec44',
-                    },
-                  },
-                },
+                )
               }}
             />
+
             <TextField
               fullWidth
               label="Password"
@@ -264,113 +278,104 @@ function Login() {
               type={showPassword ? 'text' : 'password'}
               value={formData.password}
               onChange={handleChange}
-              margin="normal"
               required
+              sx={{
+                mb: 4,
+                '& .MuiOutlinedInput-root': {
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: 2,
+                  '& fieldset': {
+                    border: 'none'
+                  },
+                  '&:hover fieldset': {
+                    border: 'none'
+                  },
+                  '&.Mui-focused fieldset': {
+                    border: '2px solid rgba(255, 255, 255, 0.5)'
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  '&.Mui-focused': {
+                    color: 'white'
+                  }
+                },
+                '& .MuiInputBase-input': {
+                  color: 'white',
+                  '&::placeholder': {
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    opacity: 1
+                  }
+                }
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Lock sx={{ color: '#2196f3', fontSize: 28 }} />
+                    <Lock sx={{ color: 'rgba(255, 255, 255, 0.6)' }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword((show) => !show)}
+                      onClick={() => setShowPassword(!showPassword)}
                       edge="end"
-                      sx={{ color: '#2196f3', background: 'rgba(255,255,255,0.12)', borderRadius: 2, '&:hover': { background: 'rgba(33,150,243,0.22)' } }}
+                      sx={{ color: 'rgba(255, 255, 255, 0.6)' }}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
-                ),
-                sx: {
-                  fontSize: 20,
-                  color: 'white',
-                  fontWeight: 500,
-                  borderRadius: 3,
-                  background: 'transparent',
-                  boxShadow: '0 4px 32px 0 rgba(255,182,236,0.10)',
-                  backdropFilter: 'blur(16px)',
-                  px: 2,
-                  py: 1.5,
-                  '& .MuiInputBase-input': {
-                    color: 'white',
-                    fontSize: 20,
-                    fontWeight: 500,
-                    letterSpacing: 0.5,
-                    background: 'transparent !important',
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(255,255,255,0.7)',
-                    fontSize: 18,
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 3,
-                    background: 'transparent',
-                    border: '1.5px solid rgba(255,255,255,0.25)',
-                    boxShadow: '0 4px 32px 0 rgba(255,182,236,0.10)',
-                    transition: 'all 0.3s',
-                    '&:hover': {
-                      border: '1.5px solid #ffb6ec',
-                      background: 'transparent',
-                    },
-                    '&.Mui-focused': {
-                      border: '2px solid #ffb6ec',
-                      background: 'transparent',
-                      boxShadow: '0 0 12px 2px #ffb6ec44',
-                    },
-                  },
-                },
+                )
               }}
             />
+
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{
-                mt: 4,
-                mb: 3,
-                py: 2,
-                fontSize: 18,
-                fontWeight: 600,
+                py: isMobile ? 1.5 : 2,
                 background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)',
-                backdropFilter: 'blur(20px)',
+                backdropFilter: 'blur(10px)',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
-                color: 'white',
-                textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
                 borderRadius: 3,
+                color: 'white',
+                fontWeight: 600,
+                fontSize: isMobile ? '16px' : '18px',
+                textTransform: 'none',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
                 transition: 'all 0.3s ease',
                 '&:hover': {
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.2) 100%)',
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.2) 100%)'
+                  boxShadow: '0 12px 40px rgba(0,0,0,0.3)'
                 }
               }}
             >
               Sign In
             </Button>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="body2" sx={{ color: 'white', opacity: 0.8, textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                Don't have an account?{' '}
-                <Link 
-                  href="/register" 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
-                    textDecoration: 'none',
-                    fontWeight: 600,
-                    textShadow: '0 1px 2px rgba(0,0,0,0.2)',
-                    '&:hover': {
-                      textDecoration: 'underline'
-                    }
-                  }}
-                >
-                  Create one here
-                </Link>
-              </Typography>
-            </Box>
+          </form>
+
+          <Box sx={{ textAlign: 'center', mt: isMobile ? 2 : 3 }}>
+            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mb: 1 }}>
+              Don't have an account?{' '}
+              <Link
+                component="button"
+                variant="body2"
+                onClick={() => navigate('/register')}
+                sx={{
+                  color: 'white',
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                  '&:hover': {
+                    textDecoration: 'underline'
+                  }
+                }}
+              >
+                Sign up
+              </Link>
+            </Typography>
           </Box>
         </Paper>
       </Container>

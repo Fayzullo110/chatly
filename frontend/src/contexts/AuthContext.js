@@ -32,7 +32,9 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       if (token) {
         try {
+          console.log('Checking auth with token:', token);
           const response = await axios.get('http://localhost:8080/profile');
+          console.log('Profile response:', response.data);
           setUser(response.data);
         } catch (error) {
           console.error('Token validation failed:', error);
@@ -52,11 +54,20 @@ export const AuthProvider = ({ children }) => {
         password
       });
       
-      const { token: newToken, username, email: userEmail } = response.data;
+      const { token: newToken } = response.data;
       
       setToken(newToken);
-      setUser({ username, email: userEmail });
       localStorage.setItem('token', newToken);
+      
+      // Fetch complete user profile after login
+      try {
+        const profileResponse = await axios.get('http://localhost:8080/profile');
+        setUser(profileResponse.data);
+      } catch (profileError) {
+        console.error('Failed to fetch user profile:', profileError);
+        // Fallback to basic user info
+        setUser({ username: response.data.username, email: response.data.email });
+      }
       
       return { success: true };
     } catch (error) {
@@ -95,6 +106,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    setUser,
     token,
     isAuthenticated: !!token,
     loading,

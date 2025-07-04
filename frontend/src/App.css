@@ -1,7 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
+/* Mobile-first responsive design */
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Responsive breakpoints */
+:root {
+  --mobile: 480px;
+  --tablet: 768px;
+  --desktop: 1024px;
+  --large-desktop: 1200px;
 }
 
 .modern-chat-bg {
@@ -39,25 +55,48 @@ body {
   opacity: 0.18;
   z-index: 0;
 }
+
 .modern-chat-bg::before {
-  width: 400px; height: 400px;
-  left: -120px; top: 10vh;
+  width: 200px; 
+  height: 200px;
+  left: -60px; 
+  top: 10vh;
   background: #2196f3;
   animation: floatShape1 18s ease-in-out infinite alternate;
 }
+
 .modern-chat-bg::after {
-  width: 300px; height: 300px;
-  right: -100px; bottom: 10vh;
+  width: 150px; 
+  height: 150px;
+  right: -50px; 
+  bottom: 10vh;
   background: #fff;
   animation: floatShape2 22s ease-in-out infinite alternate;
 }
+
 @keyframes floatShape1 {
   0% { transform: translateY(0) scale(1); }
   100% { transform: translateY(40px) scale(1.08); }
 }
+
 @keyframes floatShape2 {
   0% { transform: translateY(0) scale(1); }
   100% { transform: translateY(-30px) scale(1.12); }
+}
+
+/* Mobile responsive adjustments */
+@media (min-width: 768px) {
+  .modern-chat-bg::before {
+    width: 400px; 
+    height: 400px;
+    left: -120px;
+  }
+  
+  .modern-chat-bg::after {
+    width: 300px; 
+    height: 300px;
+    right: -100px;
+  }
 }
 
 .App {
@@ -97,4 +136,270 @@ body {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Mobile-specific styles */
+.mobile-container {
+  padding: 16px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.mobile-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-button {
+  width: 100%;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.mobile-input {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.mobile-text {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Tablet and desktop adjustments */
+@media (min-width: 768px) {
+  .mobile-container {
+    padding: 24px;
+    max-width: 768px;
+  }
+  
+  .mobile-card {
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  
+  .mobile-button {
+    width: auto;
+    padding: 12px 32px;
+    margin-bottom: 16px;
+  }
+  
+  .mobile-text {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-container {
+    max-width: 1024px;
+    padding: 32px;
+  }
+}
+
+/* Mobile navigation */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 1000;
+  padding: 8px 0;
+}
+
+.mobile-nav-content {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  color: white;
+  text-decoration: none;
+}
+
+.mobile-nav-item.active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.mobile-nav-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Mobile chat layout */
+.mobile-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-bottom: 80px; /* Space for mobile nav */
+}
+
+.mobile-chat-header {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mobile-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.mobile-chat-input {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 16px;
+  position: sticky;
+  bottom: 80px; /* Above mobile nav */
+}
+
+/* Mobile sidebar */
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  z-index: 2000;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.mobile-sidebar.open {
+  transform: translateX(0);
+}
+
+.mobile-sidebar-content {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Mobile form styles */
+.mobile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mobile-form-field {
+  width: 100%;
+}
+
+.mobile-form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.mobile-form-actions .mobile-button {
+  flex: 1;
+}
+
+/* Mobile profile */
+.mobile-profile-avatar {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Mobile responsive utilities */
+.hide-mobile {
+  display: none;
+}
+
+.show-mobile {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .hide-mobile {
+    display: block;
+  }
+  
+  .show-mobile {
+    display: none;
+  }
+  
+  .mobile-nav {
+    display: none;
+  }
+  
+  .mobile-chat-container {
+    padding-bottom: 0;
+  }
+  
+  .mobile-chat-input {
+    bottom: 0;
+  }
+}
+
+/* Touch-friendly elements */
+.mobile-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile loading states */
+.mobile-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.mobile-loading-text {
+  margin-left: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Mobile error states */
+.mobile-error {
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+  color: #f44336;
+}
+
+.mobile-success {
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+  color: #4caf50;
 }

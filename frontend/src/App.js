@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './AppRoutes';
 import { ThemeProviderCustom, useThemeMode } from './contexts/ThemeContext';
+import MobileNav from './components/MobileNav';
 
 // ErrorBoundary component
 class ErrorBoundary extends React.Component {
@@ -51,6 +52,24 @@ function ThemedApp() {
             text: { primary: '#fff', secondary: '#eee' },
           }),
     },
+    components: {
+      MuiBottomNavigation: {
+        styleOverrides: {
+          root: {
+            height: 70,
+            paddingBottom: 8,
+          },
+        },
+      },
+      MuiBottomNavigationAction: {
+        styleOverrides: {
+          root: {
+            minWidth: 'auto',
+            padding: '6px 12px 8px',
+          },
+        },
+      },
+    },
   }), [resolvedMode]);
 
   return (
@@ -61,6 +80,7 @@ function ThemedApp() {
           <AuthProvider>
             <Router>
               <AppRoutes />
+              <MobileNav />
             </Router>
           </AuthProvider>
         </ThemeProvider>
