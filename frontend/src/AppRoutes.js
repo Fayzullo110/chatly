@@ -6,6 +6,7 @@ import Chat from './components/Chat';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
 import VideoCallTest from './components/VideoCallTest';
+import TestPage from './components/TestPage';
 import Navbar from './components/Navbar';
 import Landing from './components/Landing';
 import { useAuth } from './contexts/AuthContext';
@@ -52,6 +53,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <VideoCallTest />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/test" 
+          element={
+            <ProtectedRoute>
+              <TestPage />
             </ProtectedRoute>
           } 
         />

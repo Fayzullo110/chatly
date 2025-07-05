@@ -91,6 +91,7 @@ function Navbar() {
   const mobileMenuItems = [
     { text: 'Home', icon: <Home />, path: '/' },
     { text: 'Chat', icon: <Chat />, path: '/chat' },
+    { text: 'Test', icon: <Settings />, path: '/test' },
     { text: 'Profile', icon: <Person />, path: '/profile' },
     { text: 'Settings', icon: <Settings />, path: '/settings' },
   ];
