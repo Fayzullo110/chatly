@@ -27,4 +27,10 @@ public class Message {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private ChatRoom room;
+
+    @Column(name = "message_type")
+    private String messageType = "TEXT"; // TEXT, IMAGE, VIDEO, AUDIO, FILE
+
+    @Column(name = "file_url")
+    private String fileUrl;
 } 

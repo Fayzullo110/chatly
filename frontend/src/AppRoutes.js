@@ -4,6 +4,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Chat from './components/Chat';
 import Profile from './components/Profile';
+import Settings from './components/Settings';
+import VideoCallTest from './components/VideoCallTest';
 import Navbar from './components/Navbar';
 import Landing from './components/Landing';
 import { useAuth } from './contexts/AuthContext';
@@ -17,7 +19,7 @@ const AppRoutes = () => {
   const location = useLocation();
   return (
     <>
-      {!["/", "/login", "/register", "/profile"].includes(location.pathname) && <Navbar />}
+      {!["/", "/login", "/register", "/profile", "/settings"].includes(location.pathname) && <Navbar />}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -34,6 +36,22 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/settings" 
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/video-test" 
+          element={
+            <ProtectedRoute>
+              <VideoCallTest />
             </ProtectedRoute>
           } 
         />

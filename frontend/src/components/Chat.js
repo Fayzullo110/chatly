@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import VideoCall from './VideoCall';
+import AudioCall from './AudioCall';
 import {
   Container,
   Grid,
@@ -67,6 +70,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Chat = () => {
   const { user, token } = useAuth();
+  const navigate = useNavigate();
   const theme = useMuiTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
@@ -91,6 +95,9 @@ const Chat = () => {
   const [dialogError, setDialogError] = useState('');
   const [groupMembers, setGroupMembers] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+  const [videoCallOpen, setVideoCallOpen] = useState(false);
+  const [audioCallOpen, setAudioCallOpen] = useState(false);
+  const [targetUser, setTargetUser] = useState(null);
 
   // Fetch chat rooms on component mount
   useEffect(() => {
@@ -712,6 +719,12 @@ const Chat = () => {
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <IconButton
+                    onClick={() => {
+                      if (selectedRoom && selectedRoom.type === 'private') {
+                        setTargetUser({ username: selectedRoom.name });
+                        setAudioCallOpen(true);
+                      }
+                    }}
                     sx={{
                       color: 'white',
                       background: 'rgba(255,255,255,0.1)',
@@ -727,6 +740,12 @@ const Chat = () => {
                     <CallIcon />
                   </IconButton>
                   <IconButton
+                    onClick={() => {
+                      if (selectedRoom && selectedRoom.type === 'private') {
+                        setTargetUser({ username: selectedRoom.name });
+                        setVideoCallOpen(true);
+                      }
+                    }}
                     sx={{
                       color: 'white',
                       background: 'rgba(255,255,255,0.1)',
@@ -740,6 +759,22 @@ const Chat = () => {
                     }}
                   >
                     <VideoCallIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => navigate('/settings')}
+                    sx={{
+                      color: 'white',
+                      background: 'rgba(255,255,255,0.1)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      borderRadius: 2,
+                      '&:hover': {
+                        background: 'rgba(255,255,255,0.2)',
+                        transform: 'translateY(-1px)'
+                      }
+                    }}
+                  >
+                    <SettingsIcon />
                   </IconButton>
                   <IconButton
                     onClick={handleMenuOpen}
@@ -783,11 +818,27 @@ const Chat = () => {
                       display: 'flex',
                       justifyContent: message.userId === user?.id ? 'flex-end' : 'flex-start',
                       mb: 2,
+                      gap: 1,
+                      alignItems: 'flex-end'
                     }}
                   >
+                    {message.userId !== user?.id && (
+                      <Avatar
+                        src={message.avatarUrl ? `http://localhost:8080${message.avatarUrl}` : undefined}
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          background: 'linear-gradient(135deg, #2196f3 60%, #4facfe 100%)',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                          flexShrink: 0
+                        }}
+                      >
+                        <PersonIcon sx={{ fontSize: 16 }} />
+                      </Avatar>
+                    )}
                     <Box
                       sx={{
-                        maxWidth: isMobile ? '80%' : '60%',
+                        maxWidth: isMobile ? '70%' : '50%',
                         background: message.userId === user?.id 
                           ? 'linear-gradient(135deg, #2196f3 60%, #4facfe 100%)'
                           : 'rgba(255,255,255,0.15)',
@@ -816,6 +867,20 @@ const Chat = () => {
                         {new Date(message.timestamp).toLocaleTimeString()}
                       </Typography>
                     </Box>
+                    {message.userId === user?.id && (
+                      <Avatar
+                        src={user.avatarUrl ? `http://localhost:8080${user.avatarUrl}` : undefined}
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          background: 'linear-gradient(135deg, #2196f3 60%, #4facfe 100%)',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                          flexShrink: 0
+                        }}
+                      >
+                        <PersonIcon sx={{ fontSize: 16 }} />
+                      </Avatar>
+                    )}
                   </Box>
                 ))}
               </Box>
@@ -1015,6 +1080,22 @@ const Chat = () => {
         <MenuItem onClick={handleMenuClose}>Clear Chat</MenuItem>
         <MenuItem onClick={handleMenuClose}>Delete Chat</MenuItem>
       </Menu>
+
+      {/* Video Call Component */}
+      <VideoCall
+        isOpen={videoCallOpen}
+        onClose={() => setVideoCallOpen(false)}
+        targetUser={targetUser}
+        currentUser={user}
+      />
+
+      {/* Audio Call Component */}
+      <AudioCall
+        isOpen={audioCallOpen}
+        onClose={() => setAudioCallOpen(false)}
+        targetUser={targetUser}
+        currentUser={user}
+      />
     </Box>
   );
 };

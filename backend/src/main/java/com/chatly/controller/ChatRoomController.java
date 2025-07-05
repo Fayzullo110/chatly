@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rooms")
+@RequestMapping("/chatrooms")
 public class ChatRoomController {
     @Autowired
     private ChatRoomRepository chatRoomRepository;

@@ -51,11 +51,12 @@ function Login() {
     e.preventDefault();
     setError('');
     
-    try {
-      await login(formData.email, formData.password);
+    const result = await login(formData.email, formData.password);
+    
+    if (result.success) {
       navigate('/chat');
-    } catch (err) {
-      setError(err.message || 'Login failed');
+    } else {
+      setError(result.error || 'Login failed');
     }
   };
 
