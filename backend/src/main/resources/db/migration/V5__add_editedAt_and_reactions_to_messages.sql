@@ -1,0 +1,3 @@
+ALTER TABLE messages
+ADD COLUMN edited_at DATETIME NULL,
+ADD COLUMN reactions JSON NULL; 

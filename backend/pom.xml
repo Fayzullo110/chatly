@@ -10,7 +10,7 @@
   <properties>
     <java.version>17</java.version>
   </properties>
-  <groupId>com.chatly</groupId>
+  <groupId>com.flamegram</groupId>
   <artifactId>backend</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
@@ -20,6 +20,10 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

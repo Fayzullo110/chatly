@@ -4,8 +4,8 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   en: {
     translation: {
-      welcome: 'Welcome to Chatly',
-      connect: 'Connect, chat, and collaborate instantly. Chatly is your modern, secure, and beautiful messaging platform for friends, teams, and communities.',
+      welcome: 'Welcome to Flamegram',
+      connect: 'Connect, chat, and collaborate instantly. Flamegram is your modern, secure, and beautiful messaging platform for friends, teams, and communities.',
       login: 'Login',
       register: 'Register',
       getStarted: 'Get Started',
@@ -24,8 +24,8 @@ const resources = {
   },
   de: {
     translation: {
-      welcome: 'Willkommen bei Chatly',
-      connect: 'Verbinden, chatten und sofort zusammenarbeiten. Chatly ist Ihre moderne, sichere und schöne Messaging-Plattform für Freunde, Teams und Communities.',
+      welcome: 'Willkommen bei Flamegram',
+      connect: 'Verbinden, chatten und sofort zusammenarbeiten. Flamegram ist Ihre moderne, sichere und schöne Messaging-Plattform für Freunde, Teams und Communities.',
       login: 'Anmelden',
       register: 'Registrieren',
       getStarted: 'Loslegen',
@@ -43,8 +43,8 @@ const resources = {
   },
   ru: {
     translation: {
-      welcome: 'Добро пожаловать в Chatly',
-      connect: 'Общайтесь, чатитесь и сотрудничайте мгновенно. Chatly — это современная, безопасная и красивая платформа для общения с друзьями, командами и сообществами.',
+      welcome: 'Добро пожаловать в Flamegram',
+      connect: 'Общайтесь, чатитесь и сотрудничайте мгновенно. Flamegram — это современная, безопасная и красивая платформа для общения с друзьями, командами и сообществами.',
       login: 'Войти',
       register: 'Регистрация',
       getStarted: 'Начать',
@@ -62,12 +62,12 @@ const resources = {
   },
   uz: {
     translation: {
-      welcome: 'Chatly ga xush kelibsiz',
-      connect: 'Ulaning, suhbatlashing va bir zumda hamkorlik qiling. Chatly — do‘stlar, jamoalar va hamjamiyatlar uchun zamonaviy, xavfsiz va chiroyli xabar almashish platformasi.',
+      welcome: 'Flamegram ga xush kelibsiz',
+      connect: 'Ulaning, suhbatlashing va bir zumda hamkorlik qiling. Flamegram — do\'stlar, jamoalar va hamjamiyatlar uchun zamonaviy, xavfsiz va chiroyli xabar almashish platformasi.',
       login: 'Kirish',
-      register: 'Ro‘yxatdan o‘tish',
+      register: 'Ro\'yxatdan o\'tish',
       getStarted: 'Boshlash',
-      dontHaveAccount: 'Hisobingiz yo‘qmi?',
+      dontHaveAccount: 'Hisobingiz yo\'qmi?',
       createOneHere: 'Bu yerda yarating',
       alreadyHaveAccount: 'Allaqachon hisobingiz bormi?',
       signInHere: 'Bu yerda kiring',

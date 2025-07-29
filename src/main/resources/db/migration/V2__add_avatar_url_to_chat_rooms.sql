@@ -1,0 +1,1 @@
+ALTER TABLE chat_rooms ADD COLUMN avatar_url VARCHAR(255); 

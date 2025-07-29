@@ -4,9 +4,14 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Chat from './components/Chat';
 import Profile from './components/Profile';
-import Navbar from './components/Navbar';
+import Settings from './components/Settings';
+import VideoCallTest from './components/VideoCallTest';
+import TestPage from './components/TestPage';
 import Landing from './components/Landing';
+import GroupCreatePage from './components/GroupCreatePage';
 import { useAuth } from './contexts/AuthContext';
+import { Box } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -15,9 +20,9 @@ const ProtectedRoute = ({ children }) => {
 
 const AppRoutes = () => {
   const location = useLocation();
+  const theme = useTheme();
   return (
-    <>
-      {!["/", "/login", "/register", "/profile"].includes(location.pathname) && <Navbar />}
+    <Box sx={{ background: theme.palette.background.default, minHeight: '100vh', width: '100vw' }}>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -37,9 +42,41 @@ const AppRoutes = () => {
             </ProtectedRoute>
           } 
         />
+        <Route 
+          path="/settings" 
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/video-test" 
+          element={
+            <ProtectedRoute>
+              <VideoCallTest />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/test" 
+          element={
+            <ProtectedRoute>
+              <TestPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/create-group" 
+          element={
+            <ProtectedRoute>
+              <GroupCreatePage user={useAuth().user} />
+            </ProtectedRoute>
+          } 
+        />
         <Route path="/" element={<Landing />} />
       </Routes>
-    </>
+    </Box>
   );
 };
 

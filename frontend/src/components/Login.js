@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { Email, Lock, Visibility, VisibilityOff, Login as LoginIcon } from '@mui/icons-material';
 import { keyframes } from '@emotion/react';
+import FlamegramLogo from './FlamegramLogo';
 
 // Keyframe animations
 const float = keyframes`
@@ -42,20 +43,22 @@ function Login() {
   });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { login } = useContext(AuthContext);
+  const { login, clearAuthForRegistration } = useContext(AuthContext);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     
-    try {
-      await login(formData.email, formData.password);
+    const result = await login(formData.email, formData.password);
+    
+    if (result.success) {
       navigate('/chat');
-    } catch (err) {
-      setError(err.message || 'Login failed');
+    } else {
+      setError(result.error || 'Login failed');
     }
   };
 
@@ -76,71 +79,17 @@ function Login() {
       alignItems: 'center',
       justifyContent: 'center',
       position: 'relative',
-      overflow: 'hidden',
+      overflow: 'auto',
       flexDirection: 'column',
-      px: isMobile ? 2 : 0
+      px: { xs: 1, sm: 2, md: 0 }
     }}>
-      {/* Glassmorphism AppBar */}
-      <Box sx={{ width: '100%', zIndex: 10 }}>
-        <Box sx={{
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-          display: 'flex',
-          alignItems: 'center',
-          px: isMobile ? 2 : 4,
-          py: isMobile ? 1.5 : 2,
-        }}>
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            background: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: 3,
-            px: isMobile ? 1.5 : 2,
-            py: isMobile ? 0.5 : 1,
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              background: 'rgba(255, 255, 255, 0.15)',
-              transform: 'translateY(-1px)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
-            }
-          }} onClick={() => navigate('/')}> 
-            <Box sx={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)',
-              borderRadius: '50%',
-              p: isMobile ? 0.5 : 1,
-              mr: isMobile ? 1 : 2,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backdropFilter: 'blur(10px)',
-              animation: `${pulse} 3s ease-in-out infinite`
-            }}>
-              <span role="img" aria-label="chat" style={{ fontSize: isMobile ? '16px' : '20px' }}>💬</span>
-            </Box>
-            <Typography variant={isMobile ? "h6" : "h5"} component="div" sx={{ 
-              fontWeight: 700, 
-              color: 'white',
-              textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-              display: { xs: 'none', sm: 'block' }
-            }}>
-              Chatly
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-
       {/* Animated background shapes */}
       <Box sx={{
         position: 'absolute',
-        top: '20%',
-        left: '10%',
-        width: isMobile ? 80 : 150,
-        height: isMobile ? 80 : 150,
+        top: '15%',
+        left: { xs: '5%', sm: '15%' },
+        width: { xs: 80, sm: 120 },
+        height: { xs: 80, sm: 120 },
         borderRadius: '50%',
         background: 'rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
@@ -150,9 +99,9 @@ function Login() {
       <Box sx={{
         position: 'absolute',
         bottom: '20%',
-        right: '10%',
-        width: isMobile ? 60 : 100,
-        height: isMobile ? 60 : 100,
+        right: { xs: '5%', sm: '15%' },
+        width: { xs: 60, sm: 100 },
+        height: { xs: 60, sm: 100 },
         borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%',
         background: 'rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
@@ -163,188 +112,250 @@ function Login() {
       <Container maxWidth="sm" sx={{ 
         position: 'relative', 
         zIndex: 2,
-        px: isMobile ? 1 : 3
+        px: { xs: 1, sm: 2, md: 3 },
+        py: { xs: 2, sm: 4 }
       }}>
         <Paper elevation={0} sx={{
-          p: isMobile ? 3 : 6,
+          p: { xs: 3, sm: 4, md: 6 },
           background: 'none',
           backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: isMobile ? 3 : 4,
+          borderRadius: { xs: 3, sm: 4 },
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
           animation: `${pulse} 4s ease-in-out infinite`
         }}>
           {/* Logo and Title */}
-          <Box sx={{ textAlign: 'center', mb: isMobile ? 3 : 4 }}>
+          <Box sx={{ textAlign: 'center', mb: { xs: 3, sm: 4 } }}>
             <Avatar sx={{
-              width: isMobile ? 60 : 80,
-              height: isMobile ? 60 : 80,
+              width: { xs: 60, sm: 70, md: 80 },
+              height: { xs: 60, sm: 70, md: 80 },
               mx: 'auto',
-              mb: isMobile ? 1.5 : 2,
+              mb: { xs: 1.5, sm: 2 },
               background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)',
               backdropFilter: 'blur(10px)',
               border: '2px solid rgba(255, 255, 255, 0.3)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
             }}>
-              <LoginIcon sx={{ fontSize: isMobile ? 30 : 40, color: 'white' }} />
+              <LoginIcon sx={{ 
+                fontSize: { xs: 30, sm: 35, md: 40 }, 
+                color: 'white' 
+              }} />
             </Avatar>
-            <Typography variant={isMobile ? "h4" : "h3"} component="h1" gutterBottom align="center" sx={{
+            <Typography variant={isSmallMobile ? "h4" : "h3"} component="h1" gutterBottom align="center" sx={{
               fontWeight: 700,
               color: 'white',
               textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-              mb: 1
+              mb: 1,
+              fontSize: { xs: '1.75rem', sm: '2.125rem', md: '3rem' }
             }}>
               Welcome Back
             </Typography>
-            <Typography variant={isMobile ? "body1" : "h6"} align="center" sx={{
+            <Typography variant={isSmallMobile ? "body1" : "h6"} align="center" sx={{
               color: 'white',
               opacity: 0.8,
               fontWeight: 300,
-              textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+              textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+              fontSize: { xs: '0.875rem', sm: '1rem', md: '1.25rem' }
             }}>
               Sign in to your account
             </Typography>
           </Box>
-          
-          {error && (
-            <Box sx={{
-              background: 'rgba(244, 67, 54, 0.2)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(244, 67, 54, 0.3)',
-              borderRadius: 2,
-              p: 2,
-              mb: 3,
-              textAlign: 'center'
-            }}>
-              <Typography color="error" sx={{ color: 'white', textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                {error}
-              </Typography>
-            </Box>
-          )}
 
-          <form onSubmit={handleSubmit}>
+          {/* Login Form */}
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <TextField
+              margin="normal"
+              required
               fullWidth
-              label="Email"
+              id="email"
+              label="Email Address"
               name="email"
-              type="email"
+              autoComplete="email"
+              autoFocus
               value={formData.email}
               onChange={handleChange}
-              required
               sx={{
-                mb: 3,
+                mb: { xs: 2, sm: 3 },
                 '& .MuiOutlinedInput-root': {
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: 2,
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(15px)',
+                  borderRadius: 3,
+                  transition: 'all 0.3s ease',
                   '& fieldset': {
-                    border: 'none'
+                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                    borderWidth: '2px',
+                    transition: 'border-color 0.3s ease',
                   },
-                  '&:hover fieldset': {
-                    border: 'none'
+                  '&:hover': {
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    '& fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                    },
                   },
-                  '&.Mui-focused fieldset': {
-                    border: '2px solid rgba(255, 255, 255, 0.5)'
-                  }
+                  '&.Mui-focused': {
+                    background: 'rgba(255, 255, 255, 0.25)',
+                    '& fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.8)',
+                      borderWidth: '2px',
+                    },
+                  },
+                  '&.Mui-focused .MuiInputLabel-root': {
+                    color: 'rgba(255, 255, 255, 0.9)',
+                  },
+                  // Fix autofill background
+                  '& input:-webkit-autofill': {
+                    '-webkit-box-shadow': '0 0 0 1000px rgba(255, 255, 255, 0.15) inset',
+                    '-webkit-text-fill-color': 'white',
+                    'border-radius': '12px',
+                    'transition': 'background-color 5000s ease-in-out 0s',
+                  },
+                  '& input:-webkit-autofill:hover': {
+                    '-webkit-box-shadow': '0 0 0 1000px rgba(255, 255, 255, 0.2) inset',
+                  },
+                  '& input:-webkit-autofill:focus': {
+                    '-webkit-box-shadow': '0 0 0 1000px rgba(255, 255, 255, 0.25) inset',
+                  },
                 },
                 '& .MuiInputLabel-root': {
-                  color: 'rgba(255, 255, 255, 0.8)',
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  fontWeight: 500,
                   '&.Mui-focused': {
-                    color: 'white'
-                  }
+                    color: 'rgba(255, 255, 255, 0.9)',
+                  },
                 },
                 '& .MuiInputBase-input': {
                   color: 'white',
+                  fontWeight: 500,
+                  fontSize: '1rem',
                   '&::placeholder': {
-                    color: 'rgba(255, 255, 255, 0.6)',
-                    opacity: 1
-                  }
-                }
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Email sx={{ color: 'rgba(255, 255, 255, 0.6)' }} />
-                  </InputAdornment>
-                )
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    opacity: 1,
+                  },
+                },
               }}
             />
-
             <TextField
+              margin="normal"
+              required
               fullWidth
-              label="Password"
               name="password"
+              label="Password"
               type={showPassword ? 'text' : 'password'}
+              id="password"
+              autoComplete="current-password"
               value={formData.password}
               onChange={handleChange}
-              required
-              sx={{
-                mb: 4,
-                '& .MuiOutlinedInput-root': {
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: 2,
-                  '& fieldset': {
-                    border: 'none'
-                  },
-                  '&:hover fieldset': {
-                    border: 'none'
-                  },
-                  '&.Mui-focused fieldset': {
-                    border: '2px solid rgba(255, 255, 255, 0.5)'
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  '&.Mui-focused': {
-                    color: 'white'
-                  }
-                },
-                '& .MuiInputBase-input': {
-                  color: 'white',
-                  '&::placeholder': {
-                    color: 'rgba(255, 255, 255, 0.6)',
-                    opacity: 1
-                  }
-                }
-              }}
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock sx={{ color: 'rgba(255, 255, 255, 0.6)' }} />
-                  </InputAdornment>
-                ),
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
+                      aria-label="toggle password visibility"
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
-                      sx={{ color: 'rgba(255, 255, 255, 0.6)' }}
+                      sx={{ 
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        '&:hover': {
+                          color: 'rgba(255, 255, 255, 0.9)',
+                          background: 'rgba(255, 255, 255, 0.1)',
+                        }
+                      }}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
-                )
+                ),
+              }}
+              sx={{
+                mb: { xs: 2, sm: 3 },
+                '& .MuiOutlinedInput-root': {
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(15px)',
+                  borderRadius: 3,
+                  transition: 'all 0.3s ease',
+                  '& fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                    borderWidth: '2px',
+                    transition: 'border-color 0.3s ease',
+                  },
+                  '&:hover': {
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    '& fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                    },
+                  },
+                  '&.Mui-focused': {
+                    background: 'rgba(255, 255, 255, 0.25)',
+                    '& fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.8)',
+                      borderWidth: '2px',
+                    },
+                  },
+                  '&.Mui-focused .MuiInputLabel-root': {
+                    color: 'rgba(255, 255, 255, 0.9)',
+                  },
+                  // Fix autofill background
+                  '& input:-webkit-autofill': {
+                    '-webkit-box-shadow': '0 0 0 1000px rgba(255, 255, 255, 0.15) inset',
+                    '-webkit-text-fill-color': 'white',
+                    'border-radius': '12px',
+                    'transition': 'background-color 5000s ease-in-out 0s',
+                  },
+                  '& input:-webkit-autofill:hover': {
+                    '-webkit-box-shadow': '0 0 0 1000px rgba(255, 255, 255, 0.2) inset',
+                  },
+                  '& input:-webkit-autofill:focus': {
+                    '-webkit-box-shadow': '0 0 0 1000px rgba(255, 255, 255, 0.25) inset',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  fontWeight: 500,
+                  '&.Mui-focused': {
+                    color: 'rgba(255, 255, 255, 0.9)',
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  color: 'white',
+                  fontWeight: 500,
+                  fontSize: '1rem',
+                  '&::placeholder': {
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    opacity: 1,
+                  },
+                },
               }}
             />
+            
+            {error && (
+              <Typography color="error" variant="body2" sx={{ 
+                mb: 2, 
+                textAlign: 'center',
+                background: 'rgba(244, 67, 54, 0.1)',
+                padding: 1,
+                borderRadius: 1,
+                border: '1px solid rgba(244, 67, 54, 0.3)'
+              }}>
+                {error}
+              </Typography>
+            )}
 
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{
-                py: isMobile ? 1.5 : 2,
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: 3,
-                color: 'white',
+                mt: { xs: 2, sm: 3 },
+                mb: { xs: 2, sm: 3 },
+                py: { xs: 1.5, sm: 2 },
+                fontSize: { xs: '1rem', sm: '1.1rem' },
                 fontWeight: 600,
-                fontSize: isMobile ? '16px' : '18px',
-                textTransform: 'none',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                color: 'white',
+                textShadow: '0 2px 8px rgba(0,0,0,0.3)',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                borderRadius: 2,
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.2) 100%)',
@@ -355,27 +366,36 @@ function Login() {
             >
               Sign In
             </Button>
-          </form>
-
-          <Box sx={{ textAlign: 'center', mt: isMobile ? 2 : 3 }}>
-            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mb: 1 }}>
-              Don't have an account?{' '}
-              <Link
-                component="button"
-                variant="body2"
-                onClick={() => navigate('/register')}
-                sx={{
-                  color: 'white',
-                  textDecoration: 'none',
-                  fontWeight: 600,
-                  '&:hover': {
-                    textDecoration: 'underline'
-                  }
-                }}
-              >
-                Sign up
-              </Link>
-            </Typography>
+            
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="body2" sx={{ 
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: { xs: '0.875rem', sm: '1rem' }
+              }}>
+                Don't have an account?{' '}
+                <Link
+                  component="button"
+                  variant="body2"
+                  onClick={() => {
+                    console.log('Sign up here clicked - forcing navigation to register');
+                    // Clear everything and force navigation
+                    localStorage.removeItem('token');
+                    sessionStorage.clear();
+                    window.location.href = '/register';
+                  }}
+                  sx={{
+                    color: 'white',
+                    textDecoration: 'none',
+                    fontWeight: 600,
+                    '&:hover': {
+                      textDecoration: 'underline',
+                    }
+                  }}
+                >
+                  Sign up here
+                </Link>
+              </Typography>
+            </Box>
           </Box>
         </Paper>
       </Container>
