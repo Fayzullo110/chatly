@@ -108,6 +108,33 @@ const Chat = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState(0);
+  
+  // Clear search query when component mounts and on user change
+  useEffect(() => {
+    setSearchQuery('');
+    // Clear any stored values
+    localStorage.removeItem('searchQuery');
+    sessionStorage.removeItem('searchQuery');
+  }, []);
+  
+  // Force clear search query when user changes
+  useEffect(() => {
+    if (user) {
+      setSearchQuery('');
+      // Clear any stored values
+      localStorage.removeItem('searchQuery');
+      sessionStorage.removeItem('searchQuery');
+    }
+  }, [user]);
+  
+  // Debug: log search query changes
+  useEffect(() => {
+    console.log('Search query changed to:', searchQuery);
+    if (searchQuery && searchQuery.includes('@')) {
+      console.log('Email detected in search query, clearing...');
+      setSearchQuery('');
+    }
+  }, [searchQuery]);
   const [showRightPanel, setShowRightPanel] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [newChatMode, setNewChatMode] = useState(null);
@@ -878,8 +905,22 @@ const Chat = () => {
           size="small"
           variant="outlined"
           placeholder="Search..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
+          value=""
+          onChange={e => {
+            const value = e.target.value;
+            if (!value.includes('@')) {
+              setSearchQuery(value);
+            }
+          }}
+          autoComplete="off"
+          inputProps={{
+            autoComplete: 'off',
+            'data-lpignore': 'true',
+            'data-form-type': 'other',
+            'data-1p-ignore': 'true',
+            'data-bwignore': 'true',
+            'spellCheck': 'false'
+          }}
           sx={{
             background: theme.palette.mode === 'light' ? '#e0e0e0' : theme.palette.background.paper,
             '& .MuiInputBase-input': { 
@@ -991,7 +1032,7 @@ const Chat = () => {
       }}>
         <IconButton 
           color={mainView === 'contacts' ? 'primary' : 'default'} 
-          onClick={() => { setMainView('contacts'); setSelectedRoom(null); }}
+          onClick={() => { setMainView('contacts'); setSelectedRoom(null); setSearchQuery(''); }}
           sx={{ 
             width: 56,
             height: 56,
@@ -1009,7 +1050,7 @@ const Chat = () => {
         </IconButton>
         <IconButton 
           color={mainView === 'chats' ? 'primary' : 'default'} 
-          onClick={() => { setMainView('chats'); setSelectedRoom(null); }}
+          onClick={() => { setMainView('chats'); setSelectedRoom(null); setSearchQuery(''); }}
           sx={{ 
             width: 56,
             height: 56,
@@ -1027,7 +1068,7 @@ const Chat = () => {
         </IconButton>
         <IconButton 
           color={mainView === 'settings' ? 'primary' : 'default'} 
-          onClick={() => setMainView('settings')}
+          onClick={() => { setMainView('settings'); setSearchQuery(''); }}
           sx={{ 
             width: 56,
             height: 56,
