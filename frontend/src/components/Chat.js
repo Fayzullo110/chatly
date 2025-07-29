@@ -900,54 +900,111 @@ const Chat = () => {
     >
       {/* Sidebar header: New Chat/Group */}
       <Box sx={{ p: 2, borderBottom: `1.5px solid ${theme.palette.divider}` }}>
-        <TextField
-          fullWidth
-          size="small"
-          variant="outlined"
-          placeholder="Search..."
-          value=""
-          onChange={e => {
-            const value = e.target.value;
-            if (!value.includes('@')) {
-              setSearchQuery(value);
-            }
-          }}
-          autoComplete="off"
-          inputProps={{
-            autoComplete: 'off',
-            'data-lpignore': 'true',
-            'data-form-type': 'other',
-            'data-1p-ignore': 'true',
-            'data-bwignore': 'true',
-            'spellCheck': 'false'
-          }}
+        <Box
           sx={{
-            background: theme.palette.mode === 'light' ? '#e0e0e0' : theme.palette.background.paper,
-            '& .MuiInputBase-input': { 
-              color: theme.palette.mode === 'light' ? '#000 !important' : '#fff !important',
-              WebkitTextFillColor: theme.palette.mode === 'light' ? '#000 !important' : '#fff !important',
+            position: 'relative',
+            width: '100%',
+            borderRadius: 4,
+            background: theme.palette.mode === 'light' 
+              ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%)' 
+              : 'linear-gradient(135deg, rgba(45, 55, 72, 0.95) 0%, rgba(26, 32, 44, 0.9) 100%)',
+            backdropFilter: 'blur(20px)',
+            border: theme.palette.mode === 'light' 
+              ? '1px solid rgba(255, 255, 255, 0.3)' 
+              : '1px solid rgba(255, 255, 255, 0.1)',
+            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            overflow: 'hidden',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: '-100%',
+              width: '100%',
+              height: '100%',
+              background: theme.palette.mode === 'light'
+                ? 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)'
+                : 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
+              transition: 'left 0.5s',
+              zIndex: 1,
             },
-            '& .MuiInputBase-input::placeholder': { 
-              color: theme.palette.mode === 'light' ? '#666 !important' : 'rgba(255, 255, 255, 0.6) !important', 
-              opacity: 1,
-              WebkitTextFillColor: theme.palette.mode === 'light' ? '#666 !important' : 'rgba(255, 255, 255, 0.6) !important',
+            '&:hover': {
+              background: theme.palette.mode === 'light' 
+                ? 'linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 0.95) 100%)' 
+                : 'linear-gradient(135deg, rgba(45, 55, 72, 1) 0%, rgba(26, 32, 44, 0.95) 100%)',
+              transform: 'translateY(-2px) scale(1.02)',
+              boxShadow: theme.palette.mode === 'light'
+                ? '0 8px 25px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.08)'
+                : '0 8px 25px rgba(0, 0, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.4)',
+              border: theme.palette.mode === 'light' 
+                ? '1px solid rgba(255, 255, 255, 0.5)' 
+                : '1px solid rgba(255, 255, 255, 0.2)',
+              '&::before': {
+                left: '100%',
+              },
             },
-            '& .MuiInputAdornment-root': { 
-              color: theme.palette.mode === 'light' ? '#666 !important' : '#fff !important' 
-            },
-            '& input': {
-              color: theme.palette.mode === 'light' ? '#000 !important' : '#fff !important',
-              WebkitTextFillColor: theme.palette.mode === 'light' ? '#000 !important' : '#fff !important',
+            '&:focus-within': {
+              background: theme.palette.mode === 'light' 
+                ? 'linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(240, 249, 255, 0.95) 100%)' 
+                : 'linear-gradient(135deg, rgba(45, 55, 72, 1) 0%, rgba(26, 32, 44, 0.95) 100%)',
+              transform: 'translateY(-3px) scale(1.03)',
+              boxShadow: theme.palette.mode === 'light'
+                ? `0 12px 35px rgba(33, 150, 243, 0.15), 0 6px 15px rgba(0, 0, 0, 0.1), 0 0 0 4px rgba(33, 150, 243, 0.1)`
+                : `0 12px 35px rgba(33, 150, 243, 0.4), 0 6px 15px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(33, 150, 243, 0.3)`,
+              border: `2px solid ${theme.palette.primary.main}`,
+              '&::before': {
+                left: '100%',
+              },
             },
           }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchRoundedIcon sx={{ color: theme.palette.mode === 'light' ? '#666' : '#fff' }} />
-              </InputAdornment>
-            ),
-          }}
-        />
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '14px 18px',
+              position: 'relative',
+              zIndex: 2,
+            }}
+          >
+            <SearchRoundedIcon 
+              sx={{ 
+                color: theme.palette.mode === 'light' ? '#718096' : '#a0aec0',
+                fontSize: '1.3rem',
+                marginRight: 2,
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))',
+              }} 
+            />
+            <input
+              type="text"
+              placeholder="Search chats and contacts..."
+              value=""
+              onChange={e => {
+                const value = e.target.value;
+                if (!value.includes('@')) {
+                  setSearchQuery(value);
+                }
+              }}
+              style={{
+                flex: 1,
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+                color: theme.palette.mode === 'light' ? '#1a202c' : '#f7fafc',
+                fontSize: '0.95rem',
+                fontWeight: 500,
+                letterSpacing: '0.025em',
+                fontFamily: 'inherit',
+              }}
+              autoComplete="off"
+              data-lpignore="true"
+              data-form-type="other"
+              data-1p-ignore="true"
+              data-bwignore="true"
+              spellCheck="false"
+            />
+          </Box>
+        </Box>
       </Box>
       {/* Chat list always shown in sidebar */}
       <Box sx={{ flex: 1, overflowY: 'auto', p: 1 }}>
