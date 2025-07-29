@@ -22,7 +22,8 @@ import {
   TextField,
   Alert,
   Slider,
-  Chip
+  Chip,
+  Avatar
 } from '@mui/material';
 import {
   Notifications,
@@ -133,7 +134,9 @@ const Settings = () => {
       position: 'relative',
       overflow: 'hidden',
       pt: isMobile ? 2 : 4,
-      px: isMobile ? 2 : 0
+      px: isMobile ? 2 : 0,
+      height: '100vh',
+      overflowY: 'auto',
     }}>
       {/* Header */}
       <Box sx={{
@@ -198,26 +201,115 @@ const Settings = () => {
         mt: isMobile ? 8 : 12,
         px: isMobile ? 1 : 3
       }}>
-        <Paper elevation={0} sx={{
-          p: isMobile ? 3 : 6,
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: isMobile ? 3 : 4,
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-          animation: `${pulse} 4s ease-in-out infinite`
+        {/* User Info Card */}
+        <Paper elevation={3} sx={{
+          p: isMobile ? 2 : 4,
+          mb: 4,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 3,
+          background: 'rgba(36, 40, 47, 0.95)',
+          borderRadius: 4,
+          boxShadow: '0 4px 24px rgba(0,0,0,0.12)'
         }}>
-          {/* Theme Settings */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" sx={{ 
-              color: 'white', 
-              fontWeight: 600,
-              mb: 2,
-              textShadow: '0 1px 2px rgba(0,0,0,0.2)'
-            }}>
-              Appearance
-            </Typography>
-            <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
+          <Avatar src={user?.avatarUrl ? `http://localhost:8080${user.avatarUrl}` : undefined} sx={{ width: 72, height: 72, fontSize: 32, bgcolor: '#2196f3' }}>
+            {user?.username ? user.username[0].toUpperCase() : '?'}
+          </Avatar>
+          <Box>
+            <Typography variant="h6" sx={{ color: 'white', fontWeight: 700 }}>{user?.username || 'Your Name'}</Typography>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>{user?.email || 'Your Email'}</Typography>
+          </Box>
+        </Paper>
+
+        {/* User Settings Card */}
+        <Paper elevation={2} sx={{ p: isMobile ? 2 : 4, mb: 4, borderRadius: 4, background: 'rgba(255,255,255,0.07)' }}>
+          <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 700, mb: 2, letterSpacing: 1 }}>User Settings</Typography>
+          <Divider sx={{ mb: 2, background: 'rgba(255,255,255,0.12)' }} />
+          <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
+              <ListItem>
+                <ListItemIcon>
+                  <Info sx={{ color: 'white' }} />
+                </ListItemIcon>
+                <ListItemText 
+                  primary={user?.username || 'Your Username'}
+                  secondary={user?.email || 'Your Email'}
+                  sx={{ 
+                    '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
+                    '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                  }}
+                />
+                <ListItemSecondaryAction>
+                  <Button onClick={() => navigate('/profile')} variant="outlined" size="small" sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}>Edit</Button>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <Security sx={{ color: 'white' }} />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Change Password" 
+                  secondary="Update your account password"
+                  sx={{ '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 }, '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' } }}
+                />
+                <ListItemSecondaryAction>
+                  <Button onClick={() => navigate('/profile')} variant="outlined" size="small" sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}>Change</Button>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <Close sx={{ color: 'white' }} />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Logout" 
+                  secondary="Sign out of your account"
+                  sx={{ '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 }, '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' } }}
+                />
+                <ListItemSecondaryAction>
+                  <Button onClick={handleLogout} variant="outlined" size="small" sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}>Logout</Button>
+                </ListItemSecondaryAction>
+              </ListItem>
+            </List>
+        </Paper>
+
+        {/* Privacy Card */}
+        <Paper elevation={2} sx={{ p: isMobile ? 2 : 4, mb: 4, borderRadius: 4, background: 'rgba(255,255,255,0.07)' }}>
+          <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 700, mb: 2, letterSpacing: 1 }}>Privacy</Typography>
+          <Divider sx={{ mb: 2, background: 'rgba(255,255,255,0.12)' }} />
+          <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
+              <ListItem>
+                <ListItemIcon>
+                  <Security sx={{ color: 'white' }} />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Security Settings" 
+                  secondary="Manage your security preferences"
+                  sx={{ '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 }, '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' } }}
+                />
+                <ListItemSecondaryAction>
+                  <Button onClick={() => navigate('/profile')} variant="outlined" size="small" sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}>Open</Button>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <Save sx={{ color: 'white' }} />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Reset Settings" 
+                  secondary="Reset all settings to default"
+                  sx={{ '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 }, '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' } }}
+                />
+                <ListItemSecondaryAction>
+                  <Button onClick={() => setShowResetDialog(true)} variant="outlined" size="small" sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}>Reset</Button>
+                </ListItemSecondaryAction>
+              </ListItem>
+            </List>
+        </Paper>
+
+        {/* Appearance Card */}
+        <Paper elevation={2} sx={{ p: isMobile ? 2 : 4, mb: 4, borderRadius: 4, background: 'rgba(255,255,255,0.07)' }}>
+          <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 700, mb: 2, letterSpacing: 1 }}>Appearance</Typography>
+          <Divider sx={{ mb: 2, background: 'rgba(255,255,255,0.12)' }} />
+          <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
               <ListItem>
                 <ListItemIcon>
                   {mode === 'dark' ? <DarkMode sx={{ color: 'white' }} /> : <LightMode sx={{ color: 'white' }} />}
@@ -249,19 +341,9 @@ const Settings = () => {
                 </ListItemSecondaryAction>
               </ListItem>
             </List>
-          </Box>
 
-          {/* Notification Settings */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" sx={{ 
-              color: 'white', 
-              fontWeight: 600,
-              mb: 2,
-              textShadow: '0 1px 2px rgba(0,0,0,0.2)'
-            }}>
-              Notifications
-            </Typography>
-            <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
+            {/* Notification Settings */}
+            <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2, mt: 2 }}>
               <ListItem>
                 <ListItemIcon>
                   {settings.notifications ? <Notifications sx={{ color: 'white' }} /> : <NotificationsOff sx={{ color: 'white' }} />}
@@ -354,19 +436,13 @@ const Settings = () => {
                 </Box>
               </Box>
             )}
-          </Box>
+        </Paper>
 
-          {/* Performance Settings */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" sx={{ 
-              color: 'white', 
-              fontWeight: 600,
-              mb: 2,
-              textShadow: '0 1px 2px rgba(0,0,0,0.2)'
-            }}>
-              Performance
-            </Typography>
-            <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
+        {/* Performance Settings Card */}
+        <Paper elevation={2} sx={{ p: isMobile ? 2 : 4, mb: 4, borderRadius: 4, background: 'rgba(255,255,255,0.07)' }}>
+          <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 700, mb: 2, letterSpacing: 1 }}>Performance</Typography>
+          <Divider sx={{ mb: 2, background: 'rgba(255,255,255,0.12)' }} />
+          <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
               <ListItem>
                 <ListItemIcon>
                   <Speed sx={{ color: 'white' }} />
@@ -422,19 +498,13 @@ const Settings = () => {
                 </ListItemSecondaryAction>
               </ListItem>
             </List>
-          </Box>
+        </Paper>
 
-          {/* Accessibility Settings */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" sx={{ 
-              color: 'white', 
-              fontWeight: 600,
-              mb: 2,
-              textShadow: '0 1px 2px rgba(0,0,0,0.2)'
-            }}>
-              Accessibility
-            </Typography>
-            <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
+        {/* Accessibility Card (optional, can be merged with Appearance) */}
+        <Paper elevation={2} sx={{ p: isMobile ? 2 : 4, mb: 4, borderRadius: 4, background: 'rgba(255,255,255,0.07)' }}>
+          <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 700, mb: 2, letterSpacing: 1 }}>Accessibility</Typography>
+          <Divider sx={{ mb: 2, background: 'rgba(255,255,255,0.12)' }} />
+          <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
               <ListItem>
                 <ListItemIcon>
                   <Accessibility sx={{ color: 'white' }} />
@@ -466,9 +536,9 @@ const Settings = () => {
                 </ListItemSecondaryAction>
               </ListItem>
             </List>
-          </Box>
+        </Paper>
 
-          {/* Action Buttons */}
+        {/* Action Buttons (About, etc.) can be left as is or styled similarly */}
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
             <Button
               variant="outlined"
@@ -516,8 +586,7 @@ const Settings = () => {
               Reset Settings
             </Button>
           </Box>
-        </Paper>
-      </Container>
+        </Container>
 
       {/* Reset Settings Dialog */}
       <Dialog open={showResetDialog} onClose={() => setShowResetDialog(false)}>
@@ -537,10 +606,10 @@ const Settings = () => {
 
       {/* About Dialog */}
       <Dialog open={showAboutDialog} onClose={() => setShowAboutDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>About Chatly</DialogTitle>
+        <DialogTitle>About Flamegram</DialogTitle>
         <DialogContent>
           <Typography variant="h6" gutterBottom>
-            Chatly v1.0.0
+            Flamegram v1.0.0
           </Typography>
           <Typography paragraph>
             A modern, secure, and beautiful messaging platform for friends, teams, and communities.
@@ -549,7 +618,7 @@ const Settings = () => {
             Built with React, Material-UI, and Spring Boot.
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-            © 2024 Chatly. All rights reserved.
+            © 2024 Flamegram. All rights reserved.
           </Typography>
         </DialogContent>
         <DialogActions>

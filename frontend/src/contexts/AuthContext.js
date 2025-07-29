@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -17,6 +18,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Set up axios defaults
   useEffect(() => {
@@ -27,9 +30,31 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  // Global axios interceptor for 401
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/login');
+        }
+        return Promise.reject(error);
+      }
+    );
+    return () => axios.interceptors.response.eject(interceptor);
+  }, []);
+
   // Check if token is valid on app start
   useEffect(() => {
     const checkAuth = async () => {
+      // Don't auto-authenticate if we're on the register page
+      if (location.pathname === '/register') {
+        console.log('On register page - skipping auto-authentication');
+        setLoading(false);
+        return;
+      }
+      
       if (token) {
         try {
           console.log('Checking auth with token:', token);
@@ -45,7 +70,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
-  }, [token]);
+  }, [token, location.pathname]);
 
   const login = async (email, password) => {
     try {
@@ -104,15 +129,26 @@ export const AuthProvider = ({ children }) => {
     delete axios.defaults.headers.common['Authorization'];
   };
 
+  const clearAuthForRegistration = () => {
+    console.log('Clearing auth for registration');
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
+    // Force a re-render by updating the token state
+    setToken(localStorage.getItem('token'));
+  };
+
   const value = {
     user,
     setUser,
     token,
-    isAuthenticated: !!token,
+    isAuthenticated: !!token && location.pathname !== '/register',
     loading,
     login,
     register,
-    logout
+    logout,
+    clearAuthForRegistration
   };
 
   return (

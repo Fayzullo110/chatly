@@ -49,6 +49,8 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .anyRequest().authenticated()
             )
             .headers(headers -> headers.frameOptions().disable())
+            .headers(headers -> headers.contentTypeOptions())
+            .headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self'; object-src 'none';")))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -56,7 +58,8 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000");
+        String allowedOrigin = System.getenv().getOrDefault("CORS_ALLOWED_ORIGIN", "http://localhost:3000");
+        configuration.addAllowedOrigin(allowedOrigin);
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
@@ -76,9 +79,17 @@ public class SecurityConfig implements WebMvcConfigurer {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+                // Existing mapping for API endpoints
+                String allowedOrigin = System.getenv().getOrDefault("CORS_ALLOWED_ORIGIN", "http://localhost:3000");
                 registry.addMapping("/**")
-                    .allowedOrigins("http://localhost:3000")
+                    .allowedOrigins(allowedOrigin)
                     .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                    .allowedHeaders("*")
+                    .allowCredentials(true);
+                // Add mapping for static uploads
+                registry.addMapping("/uploads/**")
+                    .allowedOrigins(allowedOrigin)
+                    .allowedMethods("GET")
                     .allowedHeaders("*")
                     .allowCredentials(true);
             }

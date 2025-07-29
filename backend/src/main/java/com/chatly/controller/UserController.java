@@ -1,4 +1,6 @@
+package com.chatly.controller;
 import com.chatly.model.User;
+import com.chatly.model.CustomUserDetails;
 import com.chatly.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,7 +17,8 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping
-    public List<UserResponse> listUsers(@AuthenticationPrincipal User currentUser) {
+    public List<UserResponse> listUsers(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        User currentUser = userDetails.getUser();
         return userRepository.findAll().stream()
                 .filter(u -> !u.getId().equals(currentUser.getId()))
                 .map(u -> new UserResponse(u.getId(), u.getUsername(), u.getEmail(), u.getAvatarUrl()))

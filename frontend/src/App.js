@@ -5,7 +5,6 @@ import { AuthProvider } from './contexts/AuthContext';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './AppRoutes';
 import { ThemeProviderCustom, useThemeMode } from './contexts/ThemeContext';
-import MobileNav from './components/MobileNav';
 
 // ErrorBoundary component
 class ErrorBoundary extends React.Component {
@@ -40,16 +39,20 @@ function ThemedApp() {
       mode: resolvedMode,
       ...(resolvedMode === 'light'
         ? {
-            primary: { main: '#2196f3' },
+            primary: { main: '#1976d2' },
             secondary: { main: '#f50057' },
-            background: { default: '#2196f3', paper: '#fff' },
-            text: { primary: '#111', secondary: '#333' },
+            background: { default: '#f7fafd', paper: '#fff' },
+            text: { primary: '#222', secondary: '#555' },
+            divider: '#e3eafc',
+            action: { hover: '#e3eafc', selected: '#e3eafc' },
           }
         : {
-            primary: { main: '#2196f3' },
-            secondary: { main: '#f50057' },
-            background: { default: '#111', paper: '#222' },
-            text: { primary: '#fff', secondary: '#eee' },
+            primary: { main: '#90caf9' },
+            secondary: { main: '#f48fb1' },
+            background: { default: '#10151b', paper: '#232a36' },
+            text: { primary: '#f5f5f5', secondary: '#b0b8c1' },
+            divider: '#2c3442',
+            action: { hover: '#232a36', selected: '#232a36' },
           }),
     },
     components: {
@@ -69,6 +72,13 @@ function ThemedApp() {
           },
         },
       },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundImage: 'none',
+          },
+        },
+      },
     },
   }), [resolvedMode]);
 
@@ -77,12 +87,11 @@ function ThemedApp() {
       <Suspense fallback={<div style={{ padding: 32 }}>Loading...</div>}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <AuthProvider>
-            <Router>
+          <Router>
+            <AuthProvider>
               <AppRoutes />
-              <MobileNav />
-            </Router>
-          </AuthProvider>
+            </AuthProvider>
+          </Router>
         </ThemeProvider>
       </Suspense>
     </ErrorBoundary>

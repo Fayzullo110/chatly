@@ -1,0 +1,1 @@
+ALTER TABLE messages ADD COLUMN deleted_for_all BOOLEAN NOT NULL DEFAULT FALSE; 

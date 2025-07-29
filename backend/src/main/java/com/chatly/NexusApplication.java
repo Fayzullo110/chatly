@@ -8,10 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  */
 @SpringBootApplication
-public class ChatlyApplication {
+public class NexusApplication {
 
     public static void main( String[] args )
     {
-        SpringApplication.run(ChatlyApplication.class, args);
+        SpringApplication.run(NexusApplication.class, args);
     }
 }

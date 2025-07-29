@@ -1,7 +1,7 @@
-# 🧪 Chatly Testing Guide
+# 🧪 Flamegram Testing Guide
 
 ## Overview
-This guide provides comprehensive testing instructions for the Chatly chat application using the built-in TestBot. The TestBot allows you to test all features without needing multiple users or external tools.
+This guide provides comprehensive testing instructions for the Flamegram chat application using the built-in TestBot. The TestBot allows you to test all features without needing multiple users or external tools.
 
 ## 🚀 Quick Start
 

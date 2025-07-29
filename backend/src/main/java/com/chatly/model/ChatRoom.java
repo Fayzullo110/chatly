@@ -22,6 +22,10 @@ public class ChatRoom {
 
     private LocalDateTime createdAt;
 
+    private String avatarUrl;
+
+    private boolean isPublic = false;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ChatRoomType type; // PRIVATE or GROUP

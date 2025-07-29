@@ -3,6 +3,11 @@ package com.chatly.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "messages")
@@ -33,4 +38,12 @@ public class Message {
 
     @Column(name = "file_url")
     private String fileUrl;
+
+    private boolean deletedForAll = false;
+
+    private LocalDateTime editedAt;
+
+    @Column(columnDefinition = "json")
+    @Convert(converter = com.chatly.util.JsonMapConverter.class)
+    private Map<String, java.util.Set<Long>> reactions; // emoji -> set of userIds
 } 

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import com.chatly.model.CustomUserDetails;
 
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
@@ -27,31 +28,42 @@ public class ProfileController {
     private UserRepository userRepository;
 
     @GetMapping
-    public ResponseEntity<?> getProfile(@AuthenticationPrincipal User user) {
-        if (user == null) {
+    public ResponseEntity<?> getProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
+        User user = userDetails.getUser();
         // Return only safe fields
         return ResponseEntity.ok(new ProfileResponse(user.getId(), user.getUsername(), user.getEmail(), user.getAvatarUrl()));
     }
 
     @PostMapping("/avatar")
-    public ResponseEntity<?> uploadAvatar(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file) {
-        if (user == null) {
+    public ResponseEntity<?> uploadAvatar(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam("file") MultipartFile file) {
+        String[] allowedExtensions = {".jpg", ".jpeg", ".png", ".gif", ".webp"};
+        String[] allowedMimeTypes = {"image/jpeg", "image/png", "image/gif", "image/webp"};
+        if (userDetails == null) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
+        User user = userDetails.getUser();
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("No file uploaded");
         }
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = originalFilename != null && originalFilename.contains(".") ? originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase() : "";
+        String mimeType = file.getContentType() != null ? file.getContentType().toLowerCase() : "";
+        boolean validExt = java.util.Arrays.stream(allowedExtensions).anyMatch(fileExtension::equals);
+        boolean validMime = java.util.Arrays.stream(allowedMimeTypes).anyMatch(mimeType::equals);
+        if (!validExt || !validMime) {
+            return ResponseEntity.badRequest().body("File type not allowed");
+        }
+        // Placeholder for virus scanning (integrate with ClamAV or similar)
+        // if (!VirusScanner.isSafe(file)) return ResponseEntity.badRequest().body("File failed virus scan");
         try {
-            // Save file to local uploads/avatars directory
             String uploadDir = "uploads/avatars";
             Files.createDirectories(Paths.get(uploadDir));
-            String ext = file.getOriginalFilename() != null && file.getOriginalFilename().contains(".") ? file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.')) : "";
-            String filename = UUID.randomUUID() + ext;
+            String filename = UUID.randomUUID() + fileExtension;
             Path filePath = Paths.get(uploadDir, filename);
             file.transferTo(filePath);
-            // Update user avatarUrl
             user.setAvatarUrl("/" + uploadDir + "/" + filename);
             userRepository.save(user);
             return ResponseEntity.ok().body(new AvatarResponse(user.getAvatarUrl()));
@@ -62,8 +74,9 @@ public class ProfileController {
     }
 
     @PatchMapping
-    public ResponseEntity<?> updateProfile(@AuthenticationPrincipal User user, @RequestBody UpdateProfileRequest req) {
-        if (user == null) return ResponseEntity.status(401).body("Unauthorized");
+    public ResponseEntity<?> updateProfile(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UpdateProfileRequest req) {
+        if (userDetails == null) return ResponseEntity.status(401).body("Unauthorized");
+        User user = userDetails.getUser();
         
         // Validate input
         if (req.username() != null && req.username().isBlank()) {
@@ -107,8 +120,9 @@ public class ProfileController {
     }
 
     @PatchMapping("/password")
-    public ResponseEntity<?> changePassword(@AuthenticationPrincipal User user, @RequestBody ChangePasswordRequest req) {
-        if (user == null) return ResponseEntity.status(401).body("Unauthorized");
+    public ResponseEntity<?> changePassword(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChangePasswordRequest req) {
+        if (userDetails == null) return ResponseEntity.status(401).body("Unauthorized");
+        User user = userDetails.getUser();
         if (req.newPassword() == null || req.newPassword().isBlank()) return ResponseEntity.badRequest().body("New password required");
         user.setPassword(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(req.newPassword()));
         userRepository.save(user);

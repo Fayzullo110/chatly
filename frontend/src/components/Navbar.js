@@ -35,6 +35,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { useThemeMode } from '../contexts/ThemeContext';
 import { keyframes } from '@emotion/react';
+import FlamegramLogo from './FlamegramLogo';
 
 // Keyframe animations
 const float = keyframes`
@@ -129,33 +130,7 @@ function Navbar() {
                 boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
               }
             }} onClick={() => navigate('/')}>
-              <Box sx={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)',
-                borderRadius: '50%',
-                p: isMobile ? 0.5 : 1,
-                mr: isMobile ? 1 : 2,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backdropFilter: 'blur(10px)',
-                animation: `${pulse} 3s ease-in-out infinite`
-              }}>
-                <Typography variant={isMobile ? "body1" : "h6"} sx={{ 
-                  fontWeight: 700, 
-                  color: 'white',
-                  textShadow: '0 2px 4px rgba(0,0,0,0.3)'
-                }}>
-                  C
-                </Typography>
-              </Box>
-              <Typography variant={isMobile ? "h6" : "h5"} component="div" sx={{ 
-                fontWeight: 700, 
-                color: 'white',
-                textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                display: { xs: 'none', sm: 'block' }
-              }}>
-                Chatly
-              </Typography>
+              <FlamegramLogo size="medium" variant="full" color="white" />
             </Box>
           </Box>
 
