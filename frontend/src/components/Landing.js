@@ -226,7 +226,7 @@ const Landing = () => {
           {/* Logo */}
           <Box
             component="img"
-            src="/images/Flame.png"
+            src="/images/fyzoo.png"
             alt="Fyzoo Logo"
             sx={{
               width: { xs: 200, sm: 200, md: 200, lg: 200 },
