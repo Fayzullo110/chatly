@@ -88,6 +88,8 @@ import ChatIconMui from '@mui/icons-material/Chat';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Contacts from './Contacts';
+import BottomNavBar from './BottomNavBar';
+import Settings from './Settings';
 
 const Chat = () => {
   const { user, token, loading } = useAuth();
@@ -182,69 +184,8 @@ const Chat = () => {
   const messagesEndRef = React.useRef(null);
   const [mainView, setMainView] = useState('chats'); // 'chats', 'contacts', 'settings'
   const [inputValue, setInputValue] = useState('');
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
+  // Profile management state (kept for potential future use)
   const [profileAvatar, setProfileAvatar] = useState(null);
-  const [profileAvatarPreview, setProfileAvatarPreview] = useState(null);
-  const [profileUsername, setProfileUsername] = useState(user?.username || '');
-  const [profileSaving, setProfileSaving] = useState(false);
-  const [profileSaveMsg, setProfileSaveMsg] = useState('');
-  const [profileSaveMsgColor, setProfileSaveMsgColor] = useState('success.main');
-
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordSaving, setPasswordSaving] = useState(false);
-  const [passwordSaveMsg, setPasswordSaveMsg] = useState('');
-  const [passwordSaveMsgColor, setPasswordSaveMsgColor] = useState('success.main');
-
-  const [profileEditMode, setProfileEditMode] = useState(false);
-  const [showOldPassword, setShowOldPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // Save profile handler
-  const handleProfileSave = async () => {
-    setProfileSaving(true);
-    setProfileSaveMsg('');
-    try {
-      // Placeholder: implement your API call here
-      // Simulate API delay
-      await new Promise(res => setTimeout(res, 800));
-      setProfileSaveMsg('Profile updated!');
-      setProfileSaveMsgColor('success.main');
-      // Optionally update user context here
-    } catch (e) {
-      setProfileSaveMsg('Failed to update profile');
-      setProfileSaveMsgColor('error.main');
-    }
-    setProfileSaving(false);
-  };
-
-  // Change password handler
-  const handleChangePassword = async () => {
-    setPasswordSaving(true);
-    setPasswordSaveMsg('');
-    if (newPassword !== confirmPassword) {
-      setPasswordSaveMsg('Passwords do not match');
-      setPasswordSaveMsgColor('error.main');
-      setPasswordSaving(false);
-      return;
-    }
-    try {
-      // Placeholder: implement your API call here
-      await new Promise(res => setTimeout(res, 800));
-      setPasswordSaveMsg('Password changed!');
-      setPasswordSaveMsgColor('success.main');
-      setOldPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (e) {
-      setPasswordSaveMsg('Failed to change password');
-      setPasswordSaveMsgColor('error.main');
-    }
-    setPasswordSaving(false);
-  };
 
   // Log out handler
   const handleLogout = () => {
@@ -252,16 +193,6 @@ const Chat = () => {
     if (window.confirm('Are you sure you want to log out?')) {
       // For example, clear auth context and redirect
       window.location.href = '/login';
-    }
-  };
-
-  // Delete account handler (placeholder)
-  const handleDeleteAccount = () => {
-    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      // TODO: Call your API here
-      alert('Account deleted (not really, this is a placeholder).');
-      setDeleteDialogOpen(false);
-      // Optionally redirect or log out
     }
   };
 
@@ -905,13 +836,9 @@ const Chat = () => {
             position: 'relative',
             width: '100%',
             borderRadius: 4,
-            background: theme.palette.mode === 'light' 
-              ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%)' 
-              : 'linear-gradient(135deg, rgba(45, 55, 72, 0.95) 0%, rgba(26, 32, 44, 0.9) 100%)',
-            backdropFilter: 'blur(20px)',
-            border: theme.palette.mode === 'light' 
-              ? '1px solid rgba(255, 255, 255, 0.3)' 
-              : '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'transparent',
+            backdropFilter: 'none',
+            border: '2px solid #1976d2',
             transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
             overflow: 'hidden',
             '&::before': {
@@ -935,9 +862,7 @@ const Chat = () => {
               boxShadow: theme.palette.mode === 'light'
                 ? '0 8px 25px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.08)'
                 : '0 8px 25px rgba(0, 0, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.4)',
-              border: theme.palette.mode === 'light' 
-                ? '1px solid rgba(255, 255, 255, 0.5)' 
-                : '1px solid rgba(255, 255, 255, 0.2)',
+                          border: '2px solid #1976d2',
               '&::before': {
                 left: '100%',
               },
@@ -948,37 +873,44 @@ const Chat = () => {
                 : 'linear-gradient(135deg, rgba(45, 55, 72, 1) 0%, rgba(26, 32, 44, 0.95) 100%)',
               transform: 'translateY(-3px) scale(1.03)',
               boxShadow: theme.palette.mode === 'light'
-                ? `0 12px 35px rgba(33, 150, 243, 0.15), 0 6px 15px rgba(0, 0, 0, 0.1), 0 0 0 4px rgba(33, 150, 243, 0.1)`
-                : `0 12px 35px rgba(33, 150, 243, 0.4), 0 6px 15px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(33, 150, 243, 0.3)`,
-              border: `2px solid ${theme.palette.primary.main}`,
+                ? `0 12px 35px rgba(25, 118, 210, 0.15), 0 6px 15px rgba(0, 0, 0, 0.1), 0 0 0 4px rgba(25, 118, 210, 0.1)`
+                : `0 12px 35px rgba(25, 118, 210, 0.4), 0 6px 15px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(25, 118, 210, 0.3)`,
+              border: '2px solid #1976d2',
               '&::before': {
                 left: '100%',
               },
             },
           }}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '14px 18px',
-              position: 'relative',
-              zIndex: 2,
-            }}
-          >
+                      <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '10px 16px',
+                position: 'relative',
+                zIndex: 2,
+                '& input::placeholder': {
+                  color: '#666666 !important',
+                  opacity: 0.8,
+                },
+                '& input': {
+                  color: '#000000 !important',
+                },
+              }}
+            >
             <SearchRoundedIcon 
               sx={{ 
-                color: theme.palette.mode === 'light' ? '#718096' : '#a0aec0',
-                fontSize: '1.3rem',
-                marginRight: 2,
+                color: '#1976d2',
+                fontSize: '1.1rem',
+                marginRight: 1.5,
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))',
+                filter: 'drop-shadow(0 1px 2px rgba(25, 118, 210, 0.2))',
               }} 
             />
             <input
               type="text"
               placeholder="Search chats and contacts..."
-              value=""
+              value={searchQuery}
               onChange={e => {
                 const value = e.target.value;
                 if (!value.includes('@')) {
@@ -990,11 +922,14 @@ const Chat = () => {
                 border: 'none',
                 outline: 'none',
                 background: 'transparent',
-                color: theme.palette.mode === 'light' ? '#1a202c' : '#f7fafc',
-                fontSize: '0.95rem',
+                color: '#000000 !important',
+                fontSize: '0.9rem',
                 fontWeight: 500,
                 letterSpacing: '0.025em',
                 fontFamily: 'inherit',
+                lineHeight: '1.4',
+                padding: '4px 0',
+                minHeight: '20px',
               }}
               autoComplete="off"
               data-lpignore="true"
@@ -1067,26 +1002,27 @@ const Chat = () => {
           </Box>
         ))}
       </Box>
-      {/* Bottom navigation bar: only in sidebar */}
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        p: 1,
-        borderTop: 'none',
-        background: theme.palette.mode === 'dark' ? '#20232a' : '#e9eef6',
-        minHeight: 56,
-        position: 'sticky',
-        bottom: 0,
-        zIndex: 300,
-        '& > *': {
-          flex: '0 0 auto !important',
-          minWidth: 'auto !important',
-          maxWidth: 'none !important',
-          transform: 'none !important',
-        }
-      }}>
+      {/* Bottom navigation bar: only in sidebar on desktop */}
+      {!isMobile && (
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          p: 1,
+          borderTop: 'none',
+          background: theme.palette.mode === 'dark' ? '#20232a' : '#e9eef6',
+          minHeight: 56,
+          position: 'sticky',
+          bottom: 0,
+          zIndex: 300,
+          '& > *': {
+            flex: '0 0 auto !important',
+            minWidth: 'auto !important',
+            maxWidth: 'none !important',
+            transform: 'none !important',
+          }
+        }}>
         <IconButton 
           color={mainView === 'contacts' ? 'primary' : 'default'} 
           onClick={() => { setMainView('contacts'); setSelectedRoom(null); setSearchQuery(''); }}
@@ -1142,6 +1078,7 @@ const Chat = () => {
           <AccountCircleIcon fontSize="large" />
         </IconButton>
       </Box>
+      )}
     </Box>
   );
 
@@ -1360,106 +1297,24 @@ const Chat = () => {
           handleOpenNewGroup={handleOpenNewGroup}
           onNav={setMainView}
           mainView={mainView}
+          onContactSelect={(user) => {
+            // Handle contact selection - could open a chat with this user
+            console.log('Selected contact:', user);
+            // You can implement logic here to start a chat with the selected user
+          }}
         />
       )}
       {mainView === 'settings' && (
-        <Box sx={{ p: { xs: 1, md: 4 }, maxWidth: 500, mx: 'auto', width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <Button startIcon={<ArrowBackIcon />} onClick={() => setMainView('chats')} sx={{ alignSelf: 'flex-start', mb: 1 }}>Back</Button>
-
-          {/* Profile Section */}
-          <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>Profile</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Box sx={{ position: 'relative' }}>
-                <Avatar src={profileAvatarPreview || (user?.avatarUrl ? `http://localhost:8080${user.avatarUrl}` : undefined)} sx={{ width: 64, height: 64, bgcolor: '#2196f3', fontSize: 32 }}>
-                  {user?.username ? user.username[0].toUpperCase() : '?'}
-                </Avatar>
-                <input accept="image/*" style={{ display: 'none' }} id="avatar-upload" type="file" onChange={e => { const file = e.target.files[0]; if (file) { setProfileAvatar(file); setProfileAvatarPreview(URL.createObjectURL(file)); setProfileEditMode(true); } }} />
-                <label htmlFor="avatar-upload">
-                  <IconButton size="small" component="span" sx={{ position: 'absolute', bottom: 0, right: 0, bgcolor: 'background.paper', boxShadow: 1 }}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </label>
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                {profileEditMode ? (
-                  <TextField label="Username" value={profileUsername} onChange={e => setProfileUsername(e.target.value)} fullWidth variant="outlined" sx={{ mb: 1, '& .MuiOutlinedInput-root': { backgroundColor: theme.palette.mode === 'light' ? '#f0f0f0' : undefined } }} />
-                ) : (
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{user?.username}</Typography>
-                )}
-                <Typography variant="body2" color="text.secondary">{user?.email || ''}</Typography>
-              </Box>
-            </Box>
-            {profileEditMode ? (
-              <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                <Button variant="contained" color="primary" onClick={handleProfileSave} disabled={profileSaving}>{profileSaving ? 'Saving...' : 'Save'}</Button>
-                <Button variant="outlined" onClick={() => { setProfileEditMode(false); setProfileAvatar(null); setProfileAvatarPreview(null); setProfileUsername(user?.username || ''); }}>Cancel</Button>
-              </Box>
-            ) : (
-              <Button variant="outlined" onClick={() => setProfileEditMode(true)}>Edit Profile</Button>
-            )}
-          </Card>
-
-          <Divider />
-
-          {/* Theme Section */}
-          <Card sx={{ p: 3, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, flex: 1 }}>Theme</Typography>
-            <Switch checked={mode === 'dark'} onChange={() => setThemeMode(mode === 'dark' ? 'light' : 'dark')} />
-            <Typography>{mode === 'dark' ? 'Dark' : 'Light'}</Typography>
-          </Card>
-
-          <Divider />
-
-          {/* Password Section */}
-          <Card sx={{ p: 3 }}>
-            <Accordion elevation={0} sx={{ boxShadow: 'none', background: 'transparent' }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>Change Password</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <TextField label="Old Password" type={showOldPassword ? 'text' : 'password'} value={oldPassword} onChange={e => setOldPassword(e.target.value)} fullWidth variant="outlined" sx={{ mb: 1, '& .MuiOutlinedInput-root': { backgroundColor: theme.palette.mode === 'light' ? '#f0f0f0' : undefined } }} InputProps={{ endAdornment: <IconButton onClick={() => setShowOldPassword(v => !v)}>{showOldPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</IconButton> }} />
-                <TextField label="New Password" type={showNewPassword ? 'text' : 'password'} value={newPassword} onChange={e => setNewPassword(e.target.value)} fullWidth variant="outlined" sx={{ mb: 1, '& .MuiOutlinedInput-root': { backgroundColor: theme.palette.mode === 'light' ? '#f0f0f0' : undefined } }} InputProps={{ endAdornment: <IconButton onClick={() => setShowNewPassword(v => !v)}>{showNewPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</IconButton> }} />
-                {/* Password strength meter */}
-                {newPassword && <Box sx={{ mb: 1 }}><LinearProgress variant="determinate" value={passwordStrength(newPassword)} sx={{ height: 8, borderRadius: 2, background: '#eee' }} /><Typography variant="caption" color="text.secondary">Strength: {passwordStrengthLabel(newPassword)}</Typography></Box>}
-                <TextField label="Confirm New Password" type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} fullWidth variant="outlined" sx={{ mb: 2, '& .MuiOutlinedInput-root': { backgroundColor: theme.palette.mode === 'light' ? '#f0f0f0' : undefined } }} InputProps={{ endAdornment: <IconButton onClick={() => setShowConfirmPassword(v => !v)}>{showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</IconButton> }} />
-                <Button variant="contained" color="primary" onClick={handleChangePassword} disabled={passwordSaving} fullWidth>{passwordSaving ? 'Saving...' : 'Change Password'}</Button>
-              </AccordionDetails>
-            </Accordion>
-          </Card>
-
-          <Divider />
-
-          {/* Account Section */}
-          <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>Account</Typography>
-            <Button variant="outlined" color="error" onClick={handleLogout} fullWidth>Log Out</Button>
-            <Button variant="text" color="error" onClick={() => setDeleteDialogOpen(true)} fullWidth>Delete Account</Button>
-          </Card>
-
-          {/* Delete Account Dialog */}
-          <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-            <DialogTitle>Delete Account</DialogTitle>
-            <DialogContent>
-              <Typography>Are you sure you want to delete your account? This action cannot be undone.</Typography>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-              <Button color="error" onClick={handleDeleteAccount}>Delete</Button>
-            </DialogActions>
-          </Dialog>
-
-          {/* Feedback Snackbar */}
-          <Snackbar open={!!profileSaveMsg} autoHideDuration={3000} onClose={() => setProfileSaveMsg('')} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-            <Alert onClose={() => setProfileSaveMsg('')} severity={profileSaveMsgColor === 'success.main' ? 'success' : 'error'} sx={{ width: '100%' }}>
-              {profileSaveMsg}
-            </Alert>
-          </Snackbar>
-          <Snackbar open={!!passwordSaveMsg} autoHideDuration={3000} onClose={() => setPasswordSaveMsg('')} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-            <Alert onClose={() => setPasswordSaveMsg('')} severity={passwordSaveMsgColor === 'success.main' ? 'success' : 'error'} sx={{ width: '100%' }}>
-              {passwordSaveMsg}
-            </Alert>
-          </Snackbar>
+        <Box sx={{ 
+          height: '100vh', 
+          width: '100%', 
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <Settings 
+            onClose={() => setMainView('chats')} 
+            isEmbedded={true}
+          />
         </Box>
       )}
     </Box>
@@ -1467,9 +1322,13 @@ const Chat = () => {
 
   // Main render: explicit mobile/desktop switch
   return (
-    <Box sx={{ background: theme.palette.background.default, minHeight: '100vh', height: '100vh', width: '100vw', overflowX: 'hidden' }}>
+    <Box sx={{ background: theme.palette.background.default, minHeight: '100vh', height: '100vh', width: '100vw', overflowX: 'hidden', pb: isMobile ? '70px' : 0 }}>
       {isMobile ? (
-        selectedRoom ? chatAreaJSX : sidebarJSX
+        selectedRoom ? chatAreaJSX : (
+          mainView === 'contacts' ? <Contacts /> :
+          mainView === 'settings' ? <Settings onClose={() => setMainView('chats')} isEmbedded={true} /> :
+          sidebarJSX
+        )
       ) : (
         <Box sx={{ display: 'flex', minWidth: 0, width: '100%', height: '100vh', minHeight: 0, overflowX: 'hidden' }}>
           {sidebarJSX}
@@ -1652,6 +1511,12 @@ const Chat = () => {
           <Button href={mediaModalContent.url} download variant="contained">Download</Button>
         </DialogActions>
       </Dialog>
+      
+      {/* Mobile Bottom Navigation */}
+      <BottomNavBar 
+        mainView={mainView} 
+        onNavChange={setMainView}
+      />
     </Box>
   );
 };
