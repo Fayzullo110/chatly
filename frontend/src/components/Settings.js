@@ -1288,13 +1288,7 @@ const Settings = ({ onClose, isEmbedded = false }) => {
           }
         }}
       >
-        <DialogTitle sx={{ 
-          color: 'white', 
-          background: 'rgba(255,255,255,0.1)',
-          borderBottom: '1px solid rgba(255,255,255,0.2)'
-        }}>
-          Edit Profile
-        </DialogTitle>
+
         <DialogContent sx={{ p: 0 }}>
           <Profile onClose={() => setShowProfileEditor(false)} />
         </DialogContent>

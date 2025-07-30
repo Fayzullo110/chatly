@@ -416,28 +416,6 @@ const Profile = () => {
               }}>
                 Profile Information
               </Typography>
-              {!editMode && (
-                <Button
-                  startIcon={<Edit />}
-                  onClick={handleEdit}
-                  sx={{
-                    color: 'white',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: 2,
-                    px: isMobile ? 1.5 : 2,
-                    py: isMobile ? 0.5 : 1,
-                    fontSize: isMobile ? '12px' : '14px',
-                    '&:hover': {
-                      background: 'rgba(255, 255, 255, 0.2)',
-                      transform: 'translateY(-1px)'
-                    }
-                  }}
-                >
-                  {isMobile ? 'Edit' : 'Edit Profile'}
-                </Button>
-              )}
             </Box>
 
             {editMode ? (
