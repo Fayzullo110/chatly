@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Avatar, Box, Typography, Autocomplete, CircularProgress } from '@mui/material';
 import axios from 'axios';
+import { useThemeMode } from '../contexts/ThemeContext';
 
 const GroupCreatePage = ({ user }) => {
   const navigate = useNavigate();
+  const { mode } = useThemeMode();
   const [groupName, setGroupName] = useState('');
   const [groupAvatar, setGroupAvatar] = useState(null);
   const [groupAvatarPreview, setGroupAvatarPreview] = useState(null);
@@ -12,6 +14,36 @@ const GroupCreatePage = ({ user }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Theme-aware TextField styling
+  const getTextFieldStyles = () => {
+    const isDark = mode === 'dark';
+    return {
+      '& .MuiInputBase-input': {
+        color: isDark ? 'white !important' : 'black !important',
+      },
+      '& .MuiInputBase-input::placeholder': {
+        color: isDark ? 'rgba(255, 255, 255, 0.6) !important' : 'rgba(0, 0, 0, 0.6) !important',
+      },
+      '& .MuiInputLabel-root': {
+        color: isDark ? 'rgba(255, 255, 255, 0.6) !important' : 'rgba(0, 0, 0, 0.6) !important',
+      },
+      '& .MuiInputLabel-root.Mui-focused': {
+        color: 'primary.main !important',
+      },
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+        },
+        '&:hover fieldset': {
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.87)' : 'rgba(0, 0, 0, 0.87)',
+        },
+        '&.Mui-focused fieldset': {
+          borderColor: 'primary.main',
+        },
+      },
+    };
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -83,6 +115,7 @@ const GroupCreatePage = ({ user }) => {
         value={groupName}
         onChange={e => setGroupName(e.target.value)}
         margin="normal"
+        sx={getTextFieldStyles()}
       />
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
         <input
@@ -107,7 +140,7 @@ const GroupCreatePage = ({ user }) => {
         getOptionLabel={option => option.username}
         value={selectedUsers}
         onChange={(event, newValue) => setSelectedUsers(newValue)}
-        renderInput={params => <TextField {...params} label="Select members (optional)" fullWidth margin="normal" />}
+        renderInput={params => <TextField {...params} label="Select members (optional)" fullWidth margin="normal" sx={getTextFieldStyles()} />}
       />
       {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
       <Button

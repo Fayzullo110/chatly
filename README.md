@@ -1,4 +1,4 @@
-# Flamegram
+# Fyzoo
 
 A modern, secure, and beautiful messaging platform for friends, teams, and communities.
 
@@ -28,7 +28,7 @@ A modern, secure, and beautiful messaging platform for friends, teams, and commu
 ## 📁 Project Structure
 
 ```
-flamegram/
+fyzoo/
 ├── frontend/          # React.js frontend application
 │   ├── src/
 │   │   ├── components/     # React components
@@ -38,7 +38,7 @@ flamegram/
 │   └── package.json
 ├── backend/           # Spring Boot backend application
 │   ├── src/main/java/
-│   │   └── com/flamegram/    # Java source code
+│   │   └── com/fyzoo/    # Java source code
 │   └── pom.xml           # Maven configuration
 └── README.md
 ```

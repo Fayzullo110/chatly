@@ -1,7 +1,7 @@
-# 🧪 Flamegram Testing Guide
+# 🧪 Fyzoo Testing Guide
 
 ## Overview
-This guide provides comprehensive testing instructions for the Flamegram chat application using the built-in TestBot. The TestBot allows you to test all features without needing multiple users or external tools.
+This guide provides comprehensive testing instructions for the Fyzoo chat application using the built-in TestBot. The TestBot allows you to test all features without needing multiple users or external tools.
 
 ## 🚀 Quick Start
 
@@ -20,7 +20,7 @@ npm start
 1. Open your browser and go to `http://localhost:3000`
 2. Login or register an account
 3. Navigate to `/test` or click "Test" in the navigation menu
-4. You'll see the **Chatly Testing Center** with multiple tabs
+4. You'll see the **Fyzoo Testing Center** with multiple tabs
 
 ## 📋 TestBot Features
 

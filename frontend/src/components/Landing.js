@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, Typography, Container, Paper, useTheme, useMediaQuery, Grid, Divider } from '@mui/material';
 import { ChatBubbleOutline, Security, Speed, Group, ArrowForward, CheckCircle } from '@mui/icons-material';
 import { keyframes } from '@emotion/react';
-import FlamegramLogo from './FlamegramLogo';
+import FyzooLogo from './FyzooLogo';
 // import { useTranslation } from 'react-i18next';
 
 // Keyframe animations
@@ -227,7 +227,7 @@ const Landing = () => {
           <Box
             component="img"
             src="/images/Flame.png"
-            alt="Flamegram Logo"
+            alt="Fyzoo Logo"
             sx={{
               width: { xs: 200, sm: 200, md: 200, lg: 200 },
               height: { xs: 200, sm: 200, md: 200, lg: 200 },
@@ -254,7 +254,7 @@ const Landing = () => {
               position: 'relative'
             }}
           >
-            FLAMEGRAM
+            FYZOO
           </Typography>
           
           {/* Tagline */}
@@ -535,7 +535,7 @@ const Landing = () => {
             fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' },
             lineHeight: 1.6
           }}>
-            Join thousands of professionals and teams who trust Flamegram for their daily communication needs
+            Join thousands of professionals and teams who trust Fyzoo for their daily communication needs
           </Typography>
           
           <Box sx={{
@@ -609,7 +609,7 @@ const Landing = () => {
             color: 'rgba(255, 255, 255, 0.7)',
             fontSize: '0.9rem'
           }}>
-            © 2024 Flamegram. All rights reserved. | Enterprise-grade messaging for modern teams
+            © 2024 Fyzoo. All rights reserved. | Enterprise-grade messaging for modern teams
           </Typography>
         </Box>
       </Container>

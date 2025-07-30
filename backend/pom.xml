@@ -10,11 +10,11 @@
   <properties>
     <java.version>17</java.version>
   </properties>
-  <groupId>com.flamegram</groupId>
-  <artifactId>backend</artifactId>
+  <groupId>com.fyzoo</groupId>
+  <artifactId>fyzoo-backend</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>backend</name>
+  <name>fyzoo-backend</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>

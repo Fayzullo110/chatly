@@ -102,7 +102,7 @@ const TestPage = () => {
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Box sx={{ mb: 3 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          🧪 Flamegram Testing Center
+          🧪 Fyzoo Testing Center
         </Typography>
         <Typography variant="body1" color="text.secondary">
           Comprehensive testing interface for all chat features

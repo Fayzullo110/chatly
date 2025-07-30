@@ -223,7 +223,7 @@ const Settings = ({ onClose, isEmbedded = false }) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `flamegram-settings-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `fyzoo-settings-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
     setShowExportDialog(false);
@@ -282,13 +282,13 @@ const Settings = ({ onClose, isEmbedded = false }) => {
           sx={{
             p: isMobile ? 3 : 4,
             mb: 4,
-            display: 'flex',
-            alignItems: 'center',
+        display: 'flex',
+        alignItems: 'center',
             gap: 3,
             background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
             borderRadius: 6,
             border: '1px solid rgba(255,255,255,0.1)',
-            backdropFilter: 'blur(20px)',
+        backdropFilter: 'blur(20px)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
             animation: `${slideIn} 0.5s ease-out`,
             cursor: 'pointer',
@@ -332,18 +332,18 @@ const Settings = ({ onClose, isEmbedded = false }) => {
               zIndex: 2
             }}
           >
-            <Box sx={{
+          <Box sx={{
               background: 'rgba(33, 150, 243, 0.9)',
-              borderRadius: '50%',
-              p: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backdropFilter: 'blur(10px)',
+            borderRadius: '50%',
+            p: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backdropFilter: 'blur(10px)',
               border: '1px solid rgba(255,255,255,0.2)'
-            }}>
+          }}>
               <Edit sx={{ fontSize: 16, color: 'white' }} />
-            </Box>
+          </Box>
           </Box>
 
           {/* Avatar with enhanced styling */}
@@ -395,21 +395,21 @@ const Settings = ({ onClose, isEmbedded = false }) => {
           {/* User Info with enhanced styling */}
           <Box sx={{ flex: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-              <Typography variant="h5" sx={{ 
-                color: 'white', 
+          <Typography variant="h5" sx={{ 
+            color: 'white',
                 fontWeight: 800,
                 textShadow: '0 2px 4px rgba(0,0,0,0.3)',
                 letterSpacing: '-0.5px'
-              }}>
+          }}>
                 {user?.username || 'Your Name'}
-              </Typography>
+          </Typography>
               <Verified sx={{ 
                 fontSize: 20, 
                 color: '#2196f3',
                 filter: 'drop-shadow(0 1px 2px rgba(33, 150, 243, 0.3))'
               }} />
-            </Box>
-            
+        </Box>
+        
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <Email sx={{ fontSize: 16, color: 'rgba(255,255,255,0.6)' }} />
               <Typography variant="body2" sx={{ 
@@ -426,12 +426,12 @@ const Settings = ({ onClose, isEmbedded = false }) => {
                 icon={<TrendingUp sx={{ fontSize: 16 }} />}
                 label="Online" 
                 size="small" 
-                sx={{ 
+          sx={{
                   background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1))',
                   color: '#4caf50',
                   border: '1px solid rgba(76, 175, 80, 0.3)',
                   fontWeight: 600,
-                  backdropFilter: 'blur(10px)',
+            backdropFilter: 'blur(10px)',
                   '& .MuiChip-icon': {
                     color: '#4caf50'
                   }
@@ -453,7 +453,7 @@ const Settings = ({ onClose, isEmbedded = false }) => {
                 }} 
               />
             </Box>
-          </Box>
+      </Box>
 
           {/* Sparkles decoration */}
           <Box sx={{
@@ -469,8 +469,8 @@ const Settings = ({ onClose, isEmbedded = false }) => {
 
         {/* Tabs */}
         <Paper elevation={2} sx={{ 
-          mb: 4, 
-          borderRadius: 4, 
+          mb: 4,
+          borderRadius: 4,
           background: 'rgba(255,255,255,0.07)',
           overflow: 'hidden'
         }}>
@@ -507,19 +507,19 @@ const Settings = ({ onClose, isEmbedded = false }) => {
               <Typography variant="h6" sx={{ color: 'white', mb: 3, fontWeight: 600 }}>Notification Preferences</Typography>
               
               <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2, mb: 3 }}>
-                <ListItem>
-                  <ListItemIcon>
+              <ListItem>
+                <ListItemIcon>
                     {settings.pushNotifications ? <NotificationsActive sx={{ color: 'white' }} /> : <NotificationsNone sx={{ color: 'white' }} />}
-                  </ListItemIcon>
-                  <ListItemText 
+                </ListItemIcon>
+                <ListItemText 
                     primary="Push Notifications" 
                     secondary="Receive notifications for new messages"
-                    sx={{ 
-                      '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
-                      '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
-                    }}
-                  />
-                  <ListItemSecondaryAction>
+                  sx={{ 
+                    '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
+                    '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                  }}
+                />
+                <ListItemSecondaryAction>
                     <Switch
                       checked={settings.pushNotifications}
                       onChange={handleSettingChange('pushNotifications')}
@@ -533,22 +533,22 @@ const Settings = ({ onClose, isEmbedded = false }) => {
                         },
                       }}
                     />
-                  </ListItemSecondaryAction>
-                </ListItem>
+                </ListItemSecondaryAction>
+              </ListItem>
                 
-                <ListItem>
-                  <ListItemIcon>
+              <ListItem>
+                <ListItemIcon>
                     {settings.soundNotifications ? <VolumeUp sx={{ color: 'white' }} /> : <VolumeOff sx={{ color: 'white' }} />}
-                  </ListItemIcon>
-                  <ListItemText 
+                </ListItemIcon>
+                <ListItemText 
                     primary="Sound Notifications" 
                     secondary="Play sounds for new messages"
                     sx={{ 
                       '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
                       '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
                     }}
-                  />
-                  <ListItemSecondaryAction>
+                />
+                <ListItemSecondaryAction>
                     <Switch
                       checked={settings.soundNotifications}
                       onChange={handleSettingChange('soundNotifications')}
@@ -562,22 +562,22 @@ const Settings = ({ onClose, isEmbedded = false }) => {
                         },
                       }}
                     />
-                  </ListItemSecondaryAction>
-                </ListItem>
+                </ListItemSecondaryAction>
+              </ListItem>
 
-                <ListItem>
-                  <ListItemIcon>
+              <ListItem>
+                <ListItemIcon>
                     <Email sx={{ color: 'white' }} />
-                  </ListItemIcon>
-                  <ListItemText 
+                </ListItemIcon>
+                <ListItemText 
                     primary="Email Notifications" 
                     secondary="Receive email notifications"
                     sx={{ 
                       '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
                       '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
                     }}
-                  />
-                  <ListItemSecondaryAction>
+                />
+                <ListItemSecondaryAction>
                     <Switch
                       checked={settings.emailNotifications}
                       onChange={handleSettingChange('emailNotifications')}
@@ -620,9 +620,9 @@ const Settings = ({ onClose, isEmbedded = false }) => {
                         },
                       }}
                     />
-                  </ListItemSecondaryAction>
-                </ListItem>
-              </List>
+                </ListItemSecondaryAction>
+              </ListItem>
+            </List>
 
               {settings.soundNotifications && (
                 <Box sx={{ mt: 3 }}>
@@ -652,19 +652,19 @@ const Settings = ({ onClose, isEmbedded = false }) => {
               <Typography variant="h6" sx={{ color: 'white', mb: 3, fontWeight: 600 }}>Privacy & Security</Typography>
               
               <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2, mb: 3 }}>
-                <ListItem>
-                  <ListItemIcon>
+              <ListItem>
+                <ListItemIcon>
                     <Visibility sx={{ color: 'white' }} />
-                  </ListItemIcon>
-                  <ListItemText 
+                </ListItemIcon>
+                <ListItemText 
                     primary="Online Status" 
                     secondary="Who can see when you're online"
                     sx={{ 
                       '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
                       '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
                     }}
-                  />
-                  <ListItemSecondaryAction>
+                />
+                <ListItemSecondaryAction>
                     <FormControl size="small" sx={{ minWidth: 120 }}>
                       <Select
                         value={settings.onlineStatus}
@@ -681,22 +681,22 @@ const Settings = ({ onClose, isEmbedded = false }) => {
                         <MenuItem value="none">Nobody</MenuItem>
                       </Select>
                     </FormControl>
-                  </ListItemSecondaryAction>
-                </ListItem>
+                </ListItemSecondaryAction>
+              </ListItem>
 
-                <ListItem>
-                  <ListItemIcon>
+              <ListItem>
+                <ListItemIcon>
                     <Visibility sx={{ color: 'white' }} />
-                  </ListItemIcon>
-                  <ListItemText 
+                </ListItemIcon>
+                <ListItemText 
                     primary="Last Seen" 
                     secondary="Who can see when you were last online"
                     sx={{ 
                       '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
                       '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
                     }}
-                  />
-                  <ListItemSecondaryAction>
+                />
+                <ListItemSecondaryAction>
                     <FormControl size="small" sx={{ minWidth: 120 }}>
                       <Select
                         value={settings.lastSeen}
@@ -771,9 +771,9 @@ const Settings = ({ onClose, isEmbedded = false }) => {
                         },
                       }}
                     />
-                  </ListItemSecondaryAction>
-                </ListItem>
-              </List>
+                </ListItemSecondaryAction>
+              </ListItem>
+            </List>
             </TabPanel>
 
             {/* Appearance Tab */}
@@ -781,95 +781,95 @@ const Settings = ({ onClose, isEmbedded = false }) => {
               <Typography variant="h6" sx={{ color: 'white', mb: 3, fontWeight: 600 }}>Appearance & Theme</Typography>
               
               <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2, mb: 3 }}>
-                <ListItem>
-                  <ListItemIcon>
-                    {mode === 'dark' ? <DarkMode sx={{ color: 'white' }} /> : <LightMode sx={{ color: 'white' }} />}
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Theme Mode" 
-                    secondary={mode === 'dark' ? 'Dark Mode' : 'Light Mode'}
-                    sx={{ 
-                      '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
-                      '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+              <ListItem>
+                <ListItemIcon>
+                  {mode === 'dark' ? <DarkMode sx={{ color: 'white' }} /> : <LightMode sx={{ color: 'white' }} />}
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Theme Mode" 
+                  secondary={mode === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                  sx={{ 
+                    '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
+                    '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                  }}
+                />
+                <ListItemSecondaryAction>
+                  <Button
+                    onClick={() => setThemeMode(mode === 'dark' ? 'light' : 'dark')}
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      color: 'white',
+                      borderColor: 'rgba(255,255,255,0.3)',
+                      '&:hover': {
+                        borderColor: 'white',
+                        background: 'rgba(255,255,255,0.1)'
+                      }
                     }}
-                  />
-                  <ListItemSecondaryAction>
-                    <Button
-                      onClick={() => setThemeMode(mode === 'dark' ? 'light' : 'dark')}
-                      variant="outlined"
-                      size="small"
-                      sx={{
-                        color: 'white',
-                        borderColor: 'rgba(255,255,255,0.3)',
-                        '&:hover': {
-                          borderColor: 'white',
-                          background: 'rgba(255,255,255,0.1)'
-                        }
-                      }}
-                    >
-                      {mode === 'dark' ? 'Light' : 'Dark'}
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
+                  >
+                    {mode === 'dark' ? 'Light' : 'Dark'}
+                  </Button>
+                </ListItemSecondaryAction>
+              </ListItem>
 
-                <ListItem>
-                  <ListItemIcon>
+              <ListItem>
+                <ListItemIcon>
                     <AutoAwesome sx={{ color: 'white' }} />
-                  </ListItemIcon>
-                  <ListItemText 
+                </ListItemIcon>
+                <ListItemText 
                     primary="Compact Mode" 
                     secondary="Reduce spacing for more content"
-                    sx={{ 
-                      '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
-                      '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
-                    }}
-                  />
-                  <ListItemSecondaryAction>
-                    <Switch
+                  sx={{ 
+                    '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
+                    '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                  }}
+                />
+                <ListItemSecondaryAction>
+                  <Switch
                       checked={settings.compactMode}
                       onChange={handleSettingChange('compactMode')}
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#2196f3',
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#2196f3',
                           '&:hover': { backgroundColor: 'rgba(33, 150, 243, 0.08)' },
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#2196f3',
-                        },
-                      }}
-                    />
-                  </ListItemSecondaryAction>
-                </ListItem>
-
-                <ListItem>
-                  <ListItemIcon>
-                    <AccountCircle sx={{ color: 'white' }} />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Show Avatars" 
-                    secondary="Display user profile pictures"
-                    sx={{ 
-                      '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
-                      '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#2196f3',
+                      },
                     }}
                   />
-                  <ListItemSecondaryAction>
-                    <Switch
+                </ListItemSecondaryAction>
+              </ListItem>
+              
+              <ListItem>
+                <ListItemIcon>
+                    <AccountCircle sx={{ color: 'white' }} />
+                </ListItemIcon>
+                <ListItemText 
+                    primary="Show Avatars" 
+                    secondary="Display user profile pictures"
+                  sx={{ 
+                    '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
+                    '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                  }}
+                />
+                <ListItemSecondaryAction>
+                  <Switch
                       checked={settings.showAvatars}
                       onChange={handleSettingChange('showAvatars')}
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#2196f3',
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#2196f3',
                           '&:hover': { backgroundColor: 'rgba(33, 150, 243, 0.08)' },
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#2196f3',
-                        },
-                      }}
-                    />
-                  </ListItemSecondaryAction>
-                </ListItem>
-              </List>
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#2196f3',
+                      },
+                    }}
+                  />
+                </ListItemSecondaryAction>
+              </ListItem>
+            </List>
             </TabPanel>
 
             {/* Performance Tab */}
@@ -877,25 +877,25 @@ const Settings = ({ onClose, isEmbedded = false }) => {
               <Typography variant="h6" sx={{ color: 'white', mb: 3, fontWeight: 600 }}>Performance & Storage</Typography>
               
               <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2, mb: 3 }}>
-                <ListItem>
-                  <ListItemIcon>
-                    <Speed sx={{ color: 'white' }} />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Performance Mode" 
-                    secondary="Optimize app performance"
-                    sx={{ 
-                      '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
-                      '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
-                    }}
-                  />
-                  <ListItemSecondaryAction>
+              <ListItem>
+                <ListItemIcon>
+                  <Speed sx={{ color: 'white' }} />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Performance Mode" 
+                  secondary="Optimize app performance"
+                  sx={{ 
+                    '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
+                    '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                  }}
+                />
+                <ListItemSecondaryAction>
                     <FormControl size="small" sx={{ minWidth: 120 }}>
                       <Select
                         value={settings.performanceMode}
                         onChange={handleSettingChange('performanceMode')}
-                        sx={{
-                          color: 'white',
+                    sx={{
+                      color: 'white',
                           '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
                           '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.5)' },
                           '& .MuiSvgIcon-root': { color: 'white' }
@@ -906,38 +906,38 @@ const Settings = ({ onClose, isEmbedded = false }) => {
                         <MenuItem value="high">High</MenuItem>
                       </Select>
                     </FormControl>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                
-                <ListItem>
-                  <ListItemIcon>
-                    <Storage sx={{ color: 'white' }} />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Auto Save" 
-                    secondary="Automatically save your data"
-                    sx={{ 
-                      '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
-                      '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                </ListItemSecondaryAction>
+              </ListItem>
+              
+              <ListItem>
+                <ListItemIcon>
+                  <Storage sx={{ color: 'white' }} />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Auto Save" 
+                  secondary="Automatically save your data"
+                  sx={{ 
+                    '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
+                    '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                  }}
+                />
+                <ListItemSecondaryAction>
+                  <Switch
+                    checked={settings.autoSave}
+                    onChange={handleSettingChange('autoSave')}
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#2196f3',
+                          '&:hover': { backgroundColor: 'rgba(33, 150, 243, 0.08)' },
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#2196f3',
+                      },
                     }}
                   />
-                  <ListItemSecondaryAction>
-                    <Switch
-                      checked={settings.autoSave}
-                      onChange={handleSettingChange('autoSave')}
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#2196f3',
-                          '&:hover': { backgroundColor: 'rgba(33, 150, 243, 0.08)' },
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#2196f3',
-                        },
-                      }}
-                    />
-                  </ListItemSecondaryAction>
-                </ListItem>
-              </List>
+                </ListItemSecondaryAction>
+              </ListItem>
+            </List>
             </TabPanel>
 
             {/* Accessibility Tab */}
@@ -945,25 +945,25 @@ const Settings = ({ onClose, isEmbedded = false }) => {
               <Typography variant="h6" sx={{ color: 'white', mb: 3, fontWeight: 600 }}>Accessibility</Typography>
               
               <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2, mb: 3 }}>
-                <ListItem>
-                  <ListItemIcon>
-                    <Accessibility sx={{ color: 'white' }} />
-                  </ListItemIcon>
-                  <ListItemText 
+              <ListItem>
+                <ListItemIcon>
+                  <Accessibility sx={{ color: 'white' }} />
+                </ListItemIcon>
+                <ListItemText 
                     primary="High Contrast" 
                     secondary="Increase contrast for better visibility"
-                    sx={{ 
-                      '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
-                      '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
-                    }}
-                  />
-                  <ListItemSecondaryAction>
-                    <Switch
+                  sx={{ 
+                    '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
+                    '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                  }}
+                />
+                <ListItemSecondaryAction>
+                  <Switch
                       checked={settings.highContrast}
                       onChange={handleSettingChange('highContrast')}
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#2196f3',
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#2196f3',
                           '&:hover': { backgroundColor: 'rgba(33, 150, 243, 0.08)' },
                         },
                         '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
@@ -994,15 +994,15 @@ const Settings = ({ onClose, isEmbedded = false }) => {
                         '& .MuiSwitch-switchBase.Mui-checked': {
                           color: '#2196f3',
                           '&:hover': { backgroundColor: 'rgba(33, 150, 243, 0.08)' },
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#2196f3',
-                        },
-                      }}
-                    />
-                  </ListItemSecondaryAction>
-                </ListItem>
-              </List>
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#2196f3',
+                      },
+                    }}
+                  />
+                </ListItemSecondaryAction>
+              </ListItem>
+            </List>
             </TabPanel>
 
             {/* Data Tab */}
@@ -1078,52 +1078,52 @@ const Settings = ({ onClose, isEmbedded = false }) => {
 
         {/* Action Buttons */}
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4 }}>
-          <Button
-            variant="outlined"
-            startIcon={<Info />}
-            onClick={() => setShowAboutDialog(true)}
-            sx={{
-              color: 'white',
-              borderColor: 'rgba(255,255,255,0.3)',
-              '&:hover': {
-                borderColor: 'white',
-                background: 'rgba(255,255,255,0.1)'
-              }
-            }}
-          >
-            About
-          </Button>
-          <Button
-            variant="outlined"
+            <Button
+              variant="outlined"
+              startIcon={<Info />}
+              onClick={() => setShowAboutDialog(true)}
+              sx={{
+                color: 'white',
+                borderColor: 'rgba(255,255,255,0.3)',
+                '&:hover': {
+                  borderColor: 'white',
+                  background: 'rgba(255,255,255,0.1)'
+                }
+              }}
+            >
+              About
+            </Button>
+            <Button
+              variant="outlined"
             startIcon={<Help />}
-            onClick={() => navigate('/profile')}
-            sx={{
-              color: 'white',
-              borderColor: 'rgba(255,255,255,0.3)',
-              '&:hover': {
-                borderColor: 'white',
-                background: 'rgba(255,255,255,0.1)'
-              }
-            }}
-          >
+              onClick={() => navigate('/profile')}
+              sx={{
+                color: 'white',
+                borderColor: 'rgba(255,255,255,0.3)',
+                '&:hover': {
+                  borderColor: 'white',
+                  background: 'rgba(255,255,255,0.1)'
+                }
+              }}
+            >
             Help
-          </Button>
-          <Button
-            variant="outlined"
+            </Button>
+            <Button
+              variant="outlined"
             startIcon={<Feedback />}
-            onClick={() => setShowResetDialog(true)}
-            sx={{
-              color: 'white',
-              borderColor: 'rgba(255,255,255,0.3)',
-              '&:hover': {
-                borderColor: 'white',
-                background: 'rgba(255,255,255,0.1)'
-              }
-            }}
-          >
+              onClick={() => setShowResetDialog(true)}
+              sx={{
+                color: 'white',
+                borderColor: 'rgba(255,255,255,0.3)',
+                '&:hover': {
+                  borderColor: 'white',
+                  background: 'rgba(255,255,255,0.1)'
+                }
+              }}
+            >
             Feedback
-          </Button>
-        </Box>
+            </Button>
+          </Box>
 
         {/* Logout Section */}
         <Paper elevation={0} sx={{
@@ -1202,7 +1202,7 @@ const Settings = ({ onClose, isEmbedded = false }) => {
             </Button>
           </Box>
         </Paper>
-      </Container>
+        </Container>
 
       {/* Reset Settings Dialog */}
       <Dialog open={showResetDialog} onClose={() => setShowResetDialog(false)}>
@@ -1254,10 +1254,10 @@ const Settings = ({ onClose, isEmbedded = false }) => {
 
       {/* About Dialog */}
       <Dialog open={showAboutDialog} onClose={() => setShowAboutDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>About Flamegram</DialogTitle>
+        <DialogTitle>About Fyzoo</DialogTitle>
         <DialogContent>
           <Typography variant="h6" gutterBottom>
-            Flamegram v1.0.0
+            Fyzoo v1.0.0
           </Typography>
           <Typography paragraph>
             A modern, secure, and beautiful messaging platform for friends, teams, and communities.
@@ -1266,7 +1266,7 @@ const Settings = ({ onClose, isEmbedded = false }) => {
             Built with React, Material-UI, and Spring Boot.
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-            © 2024 Flamegram. All rights reserved.
+            © 2024 Fyzoo. All rights reserved.
           </Typography>
         </DialogContent>
         <DialogActions>

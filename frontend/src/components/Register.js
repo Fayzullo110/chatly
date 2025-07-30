@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { Email, Lock, Person, Visibility, VisibilityOff, PersonAdd } from '@mui/icons-material';
 import { keyframes } from '@emotion/react';
-import FlamegramLogo from './FlamegramLogo';
+import FyzooLogo from './FyzooLogo';
 
 // Keyframe animations
 const float = keyframes`
@@ -162,7 +162,7 @@ function Register() {
               mb: 1,
               fontSize: { xs: '1.75rem', sm: '2.125rem', md: '3rem' }
             }}>
-              Join Flamegram
+              Join Fyzoo
             </Typography>
             <Typography variant={isSmallMobile ? "body1" : "h6"} align="center" sx={{
               color: 'white',

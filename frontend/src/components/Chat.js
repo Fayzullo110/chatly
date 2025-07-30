@@ -187,6 +187,36 @@ const Chat = () => {
   // Profile management state (kept for potential future use)
   const [profileAvatar, setProfileAvatar] = useState(null);
 
+  // Theme-aware TextField styling
+  const getTextFieldStyles = () => {
+    const isDark = mode === 'dark';
+    return {
+      '& .MuiInputBase-input': {
+        color: isDark ? 'white !important' : 'black !important',
+      },
+      '& .MuiInputBase-input::placeholder': {
+        color: isDark ? 'rgba(255, 255, 255, 0.6) !important' : 'rgba(0, 0, 0, 0.6) !important',
+      },
+      '& .MuiInputLabel-root': {
+        color: isDark ? 'rgba(255, 255, 255, 0.6) !important' : 'rgba(0, 0, 0, 0.6) !important',
+      },
+      '& .MuiInputLabel-root.Mui-focused': {
+        color: 'primary.main !important',
+      },
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+        },
+        '&:hover fieldset': {
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.87)' : 'rgba(0, 0, 0, 0.87)',
+        },
+        '&.Mui-focused fieldset': {
+          borderColor: 'primary.main',
+        },
+      },
+    };
+  };
+
   // Log out handler
   const handleLogout = () => {
     // Placeholder: implement your logout logic here
@@ -358,7 +388,7 @@ const Chat = () => {
     const fetchGroupMembers = async () => {
       if (showRightPanel && selectedRoom && selectedRoom.type === 'group') {
         try {
-          const res = await axios.get(`http://localhost:8080/rooms/${selectedRoom.id}/members`);
+          const res = await axios.get(`http://localhost:8080/chatrooms/${selectedRoom.id}/members`);
           setGroupMembers(res.data);
         } catch (e) {
           setGroupMembers([]);
@@ -510,8 +540,8 @@ const Chat = () => {
     setDialogLoading(true);
     setDialogError('');
     try {
-      console.log('Sending /rooms/private request:', { userId: selectedUser.id });
-      const res = await axios.post('http://localhost:8080/rooms/private', { userId: selectedUser.id });
+      console.log('Sending /chatrooms/private request:', { userId: selectedUser.id });
+      const res = await axios.post('http://localhost:8080/chatrooms/private', { userId: selectedUser.id });
       await fetchChatRooms();
       debugSetSelectedRoom({ id: res.data.id, name: res.data.name, type: 'private' }, 'private chat created');
       handleCloseDialog();
@@ -539,15 +569,12 @@ const Chat = () => {
       userIds = [user.id, ...userIds];
       // Remove duplicates
       userIds = Array.from(new Set(userIds));
-      console.log('Sending /rooms/group request:', { name: groupName, userIds });
+      console.log('Sending /chatrooms/group request:', { name: groupName, userIds });
       const formData = new FormData();
       formData.append('name', groupName);
       userIds.forEach(id => formData.append('userIds', id));
       if (groupAvatar) formData.append('avatar', groupAvatar);
-      // const res = await axios.post('http://localhost:8080/rooms/group', formData, {
-      //   headers: { 'Content-Type': 'multipart/form-data' }
-      // });
-      const res = await axios.post('http://localhost:8080/chatrooms/group/debug', formData, {
+      const res = await axios.post('http://localhost:8080/chatrooms/group', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       await fetchChatRooms();
@@ -805,7 +832,7 @@ const Chat = () => {
             You are not logged in
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.8 }}>
-            Please log in to use Chatly.
+            Please log in to use Fyzoo.
           </Typography>
         </Box>
       </Box>
@@ -890,11 +917,11 @@ const Chat = () => {
                 position: 'relative',
                 zIndex: 2,
                 '& input::placeholder': {
-                  color: '#666666 !important',
+                  color: mode === 'dark' ? 'rgba(255, 255, 255, 0.6) !important' : 'rgba(0, 0, 0, 0.6) !important',
                   opacity: 0.8,
                 },
                 '& input': {
-                  color: '#000000 !important',
+                  color: mode === 'dark' ? '#ffffff !important' : '#000000 !important',
                 },
               }}
             >
@@ -922,7 +949,7 @@ const Chat = () => {
                 border: 'none',
                 outline: 'none',
                 background: 'transparent',
-                color: '#000000 !important',
+                color: mode === 'dark' ? '#ffffff' : '#000000',
                 fontSize: '0.9rem',
                 fontWeight: 500,
                 letterSpacing: '0.025em',
@@ -1362,6 +1389,7 @@ const Chat = () => {
                 label="Select user"
                 fullWidth
                 margin="normal"
+                sx={getTextFieldStyles()}
               />
             )}
           />
@@ -1393,6 +1421,7 @@ const Chat = () => {
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
             margin="normal"
+            sx={getTextFieldStyles()}
           />
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <input
@@ -1423,6 +1452,7 @@ const Chat = () => {
                 label="Select members (optional)"
                 fullWidth
                 margin="normal"
+                sx={getTextFieldStyles()}
               />
             )}
           />

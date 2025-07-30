@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { Email, Lock, Visibility, VisibilityOff, Login as LoginIcon } from '@mui/icons-material';
 import { keyframes } from '@emotion/react';
-import FlamegramLogo from './FlamegramLogo';
+import FyzooLogo from './FyzooLogo';
 
 // Keyframe animations
 const float = keyframes`

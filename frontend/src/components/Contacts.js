@@ -20,6 +20,7 @@ import {
   CircularProgress,
   useTheme
 } from '@mui/material';
+import { useThemeMode } from '../contexts/ThemeContext';
 import ChatIconMui from '@mui/icons-material/Chat';
 import GroupIcon from '@mui/icons-material/Group';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
@@ -31,9 +32,51 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const Contacts = ({ users, handleOpenNewChat, handleOpenNewGroup, onNav, mainView, onContactSelect }) => {
   const theme = useTheme();
+  const { mode } = useThemeMode();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all'); // all, online, recent
   const [isLoading, setIsLoading] = useState(false);
+
+  // Theme-aware search field styling
+  const getSearchFieldStyles = () => {
+    const isDark = mode === 'dark';
+    return {
+      '& .MuiOutlinedInput-root': {
+        borderRadius: 3,
+        background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+        backdropFilter: 'blur(10px)',
+        border: '2px solid #1976d2',
+        transition: 'all 0.3s ease',
+        '& fieldset': {
+          border: 'none',
+        },
+        '&:hover fieldset': {
+          border: 'none',
+        },
+        '&.Mui-focused fieldset': {
+          border: 'none',
+        },
+        '&:hover': {
+          background: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)',
+          border: '2px solid #1976d2',
+        },
+        '&.Mui-focused': {
+          background: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)',
+          border: '2px solid #1976d2',
+          boxShadow: '0 0 0 4px rgba(25, 118, 210, 0.1)',
+        },
+      },
+      '& .MuiInputBase-input': {
+        color: isDark ? '#ffffff !important' : '#000000 !important',
+        fontSize: '0.9rem',
+        fontWeight: 500,
+      },
+      '& .MuiInputBase-input::placeholder': {
+        color: isDark ? 'rgba(255, 255, 255, 0.6) !important' : 'rgba(0, 0, 0, 0.6) !important',
+        opacity: 0.8,
+      },
+    };
+  };
 
   // Filter and sort users based on search query and filter type
   const filteredUsers = useMemo(() => {
@@ -168,42 +211,7 @@ const Contacts = ({ users, handleOpenNewChat, handleOpenNewGroup, onNav, mainVie
           placeholder="Search contacts..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              borderRadius: 3,
-              background: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-              backdropFilter: 'blur(10px)',
-              border: '2px solid #1976d2',
-              transition: 'all 0.3s ease',
-              '& fieldset': {
-                border: 'none',
-              },
-              '&:hover fieldset': {
-                border: 'none',
-              },
-              '&.Mui-focused fieldset': {
-                border: 'none',
-              },
-              '&:hover': {
-                background: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)',
-                border: '2px solid #1976d2',
-              },
-              '&.Mui-focused': {
-                background: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)',
-                border: '2px solid #1976d2',
-                boxShadow: '0 0 0 4px rgba(25, 118, 210, 0.1)',
-              },
-            },
-            '& .MuiInputBase-input': {
-              color: '#000000 !important',
-              fontSize: '0.9rem',
-              fontWeight: 500,
-            },
-            '& .MuiInputBase-input::placeholder': {
-              color: '#666666 !important',
-              opacity: 0.8,
-            },
-          }}
+          sx={getSearchFieldStyles()}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

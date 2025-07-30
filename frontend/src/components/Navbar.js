@@ -35,7 +35,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { useThemeMode } from '../contexts/ThemeContext';
 import { keyframes } from '@emotion/react';
-import FlamegramLogo from './FlamegramLogo';
+import FyzooLogo from './FyzooLogo';
 
 // Keyframe animations
 const float = keyframes`
@@ -130,7 +130,7 @@ function Navbar() {
                 boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
               }
             }} onClick={() => navigate('/')}>
-              <FlamegramLogo size="medium" variant="full" color="white" />
+              <FyzooLogo size="medium" variant="full" color="white" />
             </Box>
           </Box>
 
