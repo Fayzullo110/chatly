@@ -128,8 +128,9 @@ const Profile = () => {
 
   // Initialize form when user data is available
   React.useEffect(() => {
-    if (user) {
-      setForm({ 
+    if (user && !editMode) {
+      console.log('Initializing form with user data:', user);
+      const newForm = { 
         username: user.username || '', 
         email: user.email || '',
         bio: user.bio || '',
@@ -137,9 +138,11 @@ const Profile = () => {
         website: user.website || '',
         company: user.company || '',
         position: user.position || ''
-      });
+      };
+      console.log('Setting form to:', newForm);
+      setForm(newForm);
     }
-  }, [user]);
+  }, [user, editMode]);
 
   const handleAddPhotoClick = () => fileInputRef.current && fileInputRef.current.click();
   
@@ -166,12 +169,37 @@ const Profile = () => {
     }
   };
 
-  const handleEdit = () => setEditMode(true);
+  const handleEdit = () => {
+    // Ensure form is properly initialized with current user data
+    if (user) {
+      setForm({ 
+        username: user.username || '', 
+        email: user.email || '',
+        bio: user.bio || '',
+        location: user.location || '',
+        website: user.website || '',
+        company: user.company || '',
+        position: user.position || ''
+      });
+    }
+    setEditMode(true);
+  };
   
   const handleCancel = () => {
     setEditMode(false);
     setPasswordMode(false);
-    setForm({ username: user?.username || '', email: user?.email || '' });
+    // Reset form to original user data
+    if (user) {
+      setForm({ 
+        username: user.username || '', 
+        email: user.email || '',
+        bio: user.bio || '',
+        location: user.location || '',
+        website: user.website || '',
+        company: user.company || '',
+        position: user.position || ''
+      });
+    }
     setPasswords({ newPassword: '', confirmPassword: '' });
     setMsg(''); 
     setErr('');
@@ -246,7 +274,11 @@ const Profile = () => {
 
   const TabPanel = ({ children, value, index }) => (
     <div hidden={value !== index} style={{ width: '100%' }}>
-      {value === index && children}
+      {value === index && (
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+          {children}
+        </Box>
+      )}
     </div>
   );
 
@@ -277,9 +309,7 @@ const Profile = () => {
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      background: 'linear-gradient(-45deg, #2196f3 0%, #4facfe 50%, #1976d2 100%)',
-      backgroundSize: '400% 400%',
-      animation: `${gradientShift} 15s ease infinite`,
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       position: 'relative',
       overflow: 'hidden',
       alignItems: 'center',
@@ -291,16 +321,22 @@ const Profile = () => {
       <Container maxWidth="md" sx={{ 
         position: 'relative', 
         zIndex: 2,
-        px: isMobile ? 1 : 3
+        px: isMobile ? 1 : 3,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh'
       }}>
         <Paper elevation={0} sx={{
           p: isMobile ? 3 : 6,
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: isMobile ? 3 : 4,
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-          animation: `${pulse} 4s ease-in-out infinite`
+          background: 'rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(30px)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          borderRadius: isMobile ? 4 : 6,
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+          transition: 'all 0.3s ease',
+          width: '100%',
+          maxWidth: '600px'
         }}>
           {/* Tabs */}
           <Tabs 
@@ -311,14 +347,27 @@ const Profile = () => {
             sx={{
               mb: 4,
               '& .MuiTab-root': {
-                color: 'rgba(255,255,255,0.7)',
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: isMobile ? '0.875rem' : '1rem',
+                fontWeight: 500,
+                textTransform: 'none',
+                minHeight: 56,
                 '&.Mui-selected': {
                   color: 'white',
-                  fontWeight: 600
+                  fontWeight: 600,
+                  transform: 'scale(1.05)',
+                  transition: 'all 0.3s ease'
+                },
+                '&:hover': {
+                  color: 'white',
+                  background: 'rgba(255,255,255,0.1)',
+                  borderRadius: 2
                 }
               },
               '& .MuiTabs-indicator': {
-                backgroundColor: '#2196f3'
+                backgroundColor: 'white',
+                height: 3,
+                borderRadius: '2px 2px 0 0'
               }
             }}
           >
@@ -339,11 +388,15 @@ const Profile = () => {
                   height: isMobile ? 120 : 150,
                   mx: 'auto',
                   mb: 2,
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)',
-                  backdropFilter: 'blur(10px)',
-                  border: '3px solid rgba(255, 255, 255, 0.3)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-                  animation: `${float} 6s ease-in-out infinite`
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  border: '4px solid rgba(255, 255, 255, 0.4)',
+                  boxShadow: '0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    boxShadow: '0 16px 50px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.2)'
+                  }
                 }}
               >
                 <PersonIcon sx={{ fontSize: isMobile ? 50 : 60, color: 'white' }} />
@@ -356,16 +409,19 @@ const Profile = () => {
                     position: 'absolute',
                     bottom: 8,
                     right: 8,
-                    background: 'rgba(255, 255, 255, 0.2)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(20px)',
+                    border: '2px solid rgba(255, 255, 255, 0.4)',
+                    boxShadow: '0 6px 20px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)',
+                    transition: 'all 0.3s ease',
                     '&:hover': {
-                      background: 'rgba(255, 255, 255, 0.3)',
-                      transform: 'scale(1.1)'
+                      background: 'rgba(255, 255, 255, 1)',
+                      transform: 'scale(1.15)',
+                      boxShadow: '0 8px 25px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.2)'
                     }
                   }}
                 >
-                  <AddAPhoto sx={{ color: 'white', fontSize: isMobile ? 20 : 24 }} />
+                  <AddAPhoto sx={{ color: '#667eea', fontSize: isMobile ? 20 : 24 }} />
                 </IconButton>
               </Tooltip>
             </Box>
@@ -407,7 +463,7 @@ const Profile = () => {
           )}
 
           {/* Profile Form */}
-          <Box sx={{ mb: isMobile ? 3 : 4 }}>
+          <Box sx={{ mb: isMobile ? 3 : 4, width: '100%', maxWidth: '500px' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
               <Typography variant={isMobile ? "h6" : "h5"} sx={{ 
                 color: 'white', 
@@ -416,10 +472,32 @@ const Profile = () => {
               }}>
                 Profile Information
               </Typography>
+              {!editMode && (
+                <Button
+                  startIcon={<Edit />}
+                  onClick={handleEdit}
+                  sx={{
+                    color: 'white',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: 2,
+                    px: isMobile ? 1.5 : 2,
+                    py: isMobile ? 0.5 : 1,
+                    fontSize: isMobile ? '12px' : '14px',
+                    '&:hover': {
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      transform: 'translateY(-1px)'
+                    }
+                  }}
+                >
+                  {isMobile ? 'Edit' : 'Edit Profile'}
+                </Button>
+              )}
             </Box>
 
             {editMode ? (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', alignItems: 'center' }}>
                 <TextField
                   fullWidth
                   label="Username"
@@ -515,7 +593,7 @@ const Profile = () => {
                   }}
                 />
 
-                <Grid container spacing={2}>
+                <Grid container spacing={isMobile ? 1 : 2}>
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -699,7 +777,12 @@ const Profile = () => {
                 background: 'rgba(255, 255, 255, 0.05)', 
                 borderRadius: 2, 
                 p: isMobile ? 2 : 3,
-                border: '1px solid rgba(255, 255, 255, 0.1)'
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                width: '100%',
+                maxWidth: '500px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <PersonIcon sx={{ color: 'rgba(255, 255, 255, 0.6)', mr: 1 }} />
@@ -749,8 +832,8 @@ const Profile = () => {
           <Divider sx={{ my: isMobile ? 2 : 3, borderColor: 'rgba(255, 255, 255, 0.2)' }} />
 
           {/* Password Section */}
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+          <Box sx={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
               <Typography variant={isMobile ? "h6" : "h5"} sx={{ 
                 color: 'white', 
                 fontWeight: 600,
@@ -783,7 +866,7 @@ const Profile = () => {
             </Box>
 
             {passwordMode ? (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', alignItems: 'center' }}>
                 <TextField
                   fullWidth
                   label="New Password"
@@ -917,20 +1000,26 @@ const Profile = () => {
             <Typography variant="h6" sx={{ color: 'white', mb: 3, fontWeight: 600 }}>Privacy Settings</Typography>
             
             <List sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2, mb: 3 }}>
-              <ListItem>
-                <ListItemIcon>
-                  <Visibility sx={{ color: 'white' }} />
-                </ListItemIcon>
-                <ListItemText 
-                  primary="Profile Visibility" 
-                  secondary="Who can see your profile"
-                  sx={{ 
-                    '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
-                    '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
-                  }}
-                />
-                <ListItemSecondaryAction>
-                  <FormControl size="small" sx={{ minWidth: 120 }}>
+              <ListItem sx={{ 
+                flexDirection: isMobile ? 'column' : 'row', 
+                alignItems: isMobile ? 'flex-start' : 'center',
+                gap: isMobile ? 1 : 0
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', mb: isMobile ? 1 : 0 }}>
+                  <ListItemIcon sx={{ minWidth: isMobile ? 40 : 56 }}>
+                    <Visibility sx={{ color: 'white' }} />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="Profile Visibility" 
+                    secondary="Who can see your profile"
+                    sx={{ 
+                      '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
+                      '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                    }}
+                  />
+                </Box>
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: isMobile ? 'flex-start' : 'flex-end' }}>
+                  <FormControl size="small" sx={{ minWidth: isMobile ? '100%' : 120 }}>
                     <Select
                       value={privacySettings.profileVisibility}
                       onChange={handlePrivacyChange('profileVisibility')}
@@ -946,23 +1035,29 @@ const Profile = () => {
                       <MenuItem value="none">Nobody</MenuItem>
                     </Select>
                   </FormControl>
-                </ListItemSecondaryAction>
+                </Box>
               </ListItem>
 
-              <ListItem>
-                <ListItemIcon>
-                  <Visibility sx={{ color: 'white' }} />
-                </ListItemIcon>
-                <ListItemText 
-                  primary="Online Status" 
-                  secondary="Who can see when you're online"
-                  sx={{ 
-                    '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
-                    '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
-                  }}
-                />
-                <ListItemSecondaryAction>
-                  <FormControl size="small" sx={{ minWidth: 120 }}>
+              <ListItem sx={{ 
+                flexDirection: isMobile ? 'column' : 'row', 
+                alignItems: isMobile ? 'flex-start' : 'center',
+                gap: isMobile ? 1 : 0
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', mb: isMobile ? 1 : 0 }}>
+                  <ListItemIcon sx={{ minWidth: isMobile ? 40 : 56 }}>
+                    <Visibility sx={{ color: 'white' }} />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="Online Status" 
+                    secondary="Who can see when you're online"
+                    sx={{ 
+                      '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
+                      '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                    }}
+                  />
+                </Box>
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: isMobile ? 'flex-start' : 'flex-end' }}>
+                  <FormControl size="small" sx={{ minWidth: isMobile ? '100%' : 120 }}>
                     <Select
                       value={privacySettings.onlineStatus}
                       onChange={handlePrivacyChange('onlineStatus')}
@@ -978,22 +1073,28 @@ const Profile = () => {
                       <MenuItem value="none">Nobody</MenuItem>
                     </Select>
                   </FormControl>
-                </ListItemSecondaryAction>
+                </Box>
               </ListItem>
 
-              <ListItem>
-                <ListItemIcon>
-                  <Group sx={{ color: 'white' }} />
-                </ListItemIcon>
-                <ListItemText 
-                  primary="Allow Friend Requests" 
-                  secondary="Let others send you friend requests"
-                  sx={{ 
-                    '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
-                    '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
-                  }}
-                />
-                <ListItemSecondaryAction>
+              <ListItem sx={{ 
+                flexDirection: isMobile ? 'column' : 'row', 
+                alignItems: isMobile ? 'flex-start' : 'center',
+                gap: isMobile ? 1 : 0
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', mb: isMobile ? 1 : 0 }}>
+                  <ListItemIcon sx={{ minWidth: isMobile ? 40 : 56 }}>
+                    <Group sx={{ color: 'white' }} />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="Allow Friend Requests" 
+                    secondary="Let others send you friend requests"
+                    sx={{ 
+                      '& .MuiListItemText-primary': { color: 'white', fontWeight: 500 },
+                      '& .MuiListItemText-secondary': { color: 'rgba(255,255,255,0.7)' }
+                    }}
+                  />
+                </Box>
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: isMobile ? 'flex-start' : 'flex-end' }}>
                   <Switch
                     checked={privacySettings.allowFriendRequests}
                     onChange={handlePrivacyChange('allowFriendRequests')}
@@ -1007,7 +1108,7 @@ const Profile = () => {
                       },
                     }}
                   />
-                </ListItemSecondaryAction>
+                </Box>
               </ListItem>
             </List>
           </TabPanel>
@@ -1016,7 +1117,7 @@ const Profile = () => {
           <TabPanel value={activeTab} index={2}>
             <Typography variant="h6" sx={{ color: 'white', mb: 3, fontWeight: 600 }}>Social Links</Typography>
             
-            <Grid container spacing={2}>
+            <Grid container spacing={isMobile ? 1 : 2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth

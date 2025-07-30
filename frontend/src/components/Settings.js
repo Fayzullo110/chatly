@@ -1282,15 +1282,29 @@ const Settings = ({ onClose, isEmbedded = false }) => {
         fullWidth
         PaperProps={{
           sx: {
-            background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-            borderRadius: 3,
-            overflow: 'hidden'
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderRadius: 4,
+            overflow: 'hidden',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(20px)'
           }
         }}
       >
-
-        <DialogContent sx={{ p: 0 }}>
-          <Profile onClose={() => setShowProfileEditor(false)} />
+        <DialogContent sx={{ p: 0, position: 'relative' }}>
+          <Box sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '100%',
+            background: 'radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%)',
+            pointerEvents: 'none',
+            zIndex: 1
+          }} />
+          <Box sx={{ position: 'relative', zIndex: 2 }}>
+            <Profile onClose={() => setShowProfileEditor(false)} />
+          </Box>
         </DialogContent>
       </Dialog>
     </Box>
