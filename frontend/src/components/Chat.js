@@ -46,7 +46,8 @@ import {
   AccordionSummary,
   AccordionDetails,
   Snackbar,
-  Alert
+  Alert,
+  Checkbox
 } from '@mui/material';
 import {
   SendRounded as SendIcon,
@@ -68,7 +69,12 @@ import {
   Done,
   ExpandMore as ExpandMoreIcon,
   Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon
+  VisibilityOff as VisibilityOffIcon,
+  PersonAdd as PersonAddIcon,
+  RemoveCircle as RemoveCircleIcon,
+  Notifications as NotificationsIcon,
+  Security as SecurityIcon,
+  ExitToApp as ExitToAppIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 import { useTheme as useMuiTheme } from '@mui/material/styles';
@@ -182,10 +188,18 @@ const Chat = () => {
   const [mediaModalOpen, setMediaModalOpen] = useState(false);
   const [mediaModalContent, setMediaModalContent] = useState({ type: '', url: '', name: '' });
   const messagesEndRef = React.useRef(null);
-  const [mainView, setMainView] = useState('chats'); // 'chats', 'contacts', 'settings'
+  const [mainView, setMainView] = useState('chats'); // 'chats', 'contacts', 'settings', 'userProfile', 'groupSettings'
   const [inputValue, setInputValue] = useState('');
   // Profile management state (kept for potential future use)
   const [profileAvatar, setProfileAvatar] = useState(null);
+  const [selectedUserProfile, setSelectedUserProfile] = useState(null);
+  
+  // Group settings state
+  const [editingGroupName, setEditingGroupName] = useState(false);
+  const [editingGroupNameValue, setEditingGroupNameValue] = useState('');
+  const [showAddMembersDialog, setShowAddMembersDialog] = useState(false);
+  const [memberSearchQuery, setMemberSearchQuery] = useState('');
+  const [selectedNewMembers, setSelectedNewMembers] = useState([]);
 
   // Theme-aware TextField styling
   const getTextFieldStyles = () => {
@@ -383,19 +397,26 @@ const Chat = () => {
     }
   }, [selectedRoom, isMobile]);
 
+  // Fetch group members function
+  const fetchGroupMembers = async () => {
+    if (selectedRoom && selectedRoom.type === 'group') {
+      try {
+        const res = await axios.get(`http://localhost:8080/chatrooms/${selectedRoom.id}/members`);
+        setGroupMembers(res.data);
+        // Also update the selectedRoom with the members data
+        setSelectedRoom(prev => ({ ...prev, members: res.data }));
+      } catch (e) {
+        console.error('Error fetching group members:', e);
+        setGroupMembers([]);
+      }
+    }
+  };
+
   // Fetch group members when right panel is opened and selectedRoom is a group
   useEffect(() => {
-    const fetchGroupMembers = async () => {
-      if (showRightPanel && selectedRoom && selectedRoom.type === 'group') {
-        try {
-          const res = await axios.get(`http://localhost:8080/chatrooms/${selectedRoom.id}/members`);
-          setGroupMembers(res.data);
-        } catch (e) {
-          setGroupMembers([]);
-        }
-      }
-    };
-    fetchGroupMembers();
+    if (showRightPanel && selectedRoom && selectedRoom.type === 'group') {
+      fetchGroupMembers();
+    }
   }, [showRightPanel, selectedRoom]);
 
   useEffect(() => {
@@ -744,6 +765,66 @@ const Chat = () => {
     }
   };
 
+  // Handle clicking on user/group profile
+  const handleProfileClick = async () => {
+    console.log('=== handleProfileClick START ===');
+    console.log('selectedRoom:', selectedRoom);
+    console.log('users length:', users.length);
+    console.log('mainView before:', mainView);
+    
+    if (!selectedRoom) {
+      console.log('No selectedRoom, returning');
+      return;
+    }
+    
+    if (selectedRoom.type === 'private') {
+      // For private chats, we need to find the other user
+      // Try to get the other user from the room data or users list
+      let otherUser = null;
+      
+      // First, try to find by room name pattern
+      const roomName = selectedRoom.name;
+      console.log('Looking for user with room name:', roomName);
+      
+      if (roomName && roomName !== 'Saved Messages') {
+        // Try to find user by username in the users list
+        otherUser = users.find(u => u.username === roomName);
+        console.log('Found user by exact username match:', otherUser);
+        
+        // If not found by exact match, try to extract from room name
+        if (!otherUser && roomName.includes('_')) {
+          const usernames = roomName.split('_');
+          const otherUsername = usernames.find(name => name !== user?.username && name !== 'self');
+          console.log('Extracted other username from room name:', otherUsername);
+          if (otherUsername) {
+            otherUser = users.find(u => u.username === otherUsername);
+            console.log('Found user by extracted username:', otherUser);
+          }
+        }
+      }
+      
+      if (otherUser) {
+        console.log('Found other user:', otherUser);
+        console.log('Setting user profile and switching to userProfile view');
+        setSelectedUserProfile(otherUser);
+        setMainView('userProfile');
+        console.log('mainView set to userProfile');
+      } else {
+        console.log('No other user found, switching to settings view');
+        // If we can't find the other user, show our own profile
+        setMainView('settings');
+        console.log('mainView set to settings');
+      }
+    } else if (selectedRoom.type === 'group') {
+      console.log('Group chat detected, switching to groupSettings view');
+      // For group chats, show group settings
+      setMainView('groupSettings');
+      console.log('mainView set to groupSettings');
+    }
+    
+    console.log('=== handleProfileClick END ===');
+  };
+
   // Responsive sidebar width
   const SIDEBAR_WIDTH = 320;
 
@@ -807,12 +888,149 @@ const Chat = () => {
     setMediaModalContent({ type: '', url: '', name: '' });
   };
 
+  // Group settings handlers
+  const handleUpdateGroupName = async () => {
+    if (!selectedRoom || !editingGroupNameValue.trim()) return;
+    
+    try {
+      const response = await axios.put(`http://localhost:8080/chatrooms/${selectedRoom.id}/name`, {
+        name: editingGroupNameValue.trim()
+      });
+      
+      // Update the selected room with new name
+      setSelectedRoom(prev => ({ ...prev, name: editingGroupNameValue.trim() }));
+      
+      // Update chat rooms list
+      await fetchChatRooms();
+      
+      setEditingGroupName(false);
+      setEditingGroupNameValue('');
+    } catch (error) {
+      console.error('Failed to update group name:', error);
+      // You could add a snackbar here to show error
+    }
+  };
+
+  const handleUpdateGroupAvatar = async (file) => {
+    if (!selectedRoom || !file) return;
+    
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      
+      const response = await axios.put(`http://localhost:8080/chatrooms/${selectedRoom.id}/avatar`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      // Update the selected room with new avatar
+      setSelectedRoom(prev => ({ ...prev, avatarUrl: response.data.avatarUrl }));
+      
+      // Update chat rooms list
+      await fetchChatRooms();
+    } catch (error) {
+      console.error('Failed to update group avatar:', error);
+    }
+  };
+
+  const handleAddMembers = async () => {
+    if (!selectedRoom || selectedNewMembers.length === 0) return;
+    
+    try {
+      const userIds = selectedNewMembers.map(member => member.id);
+      
+      await axios.post(`http://localhost:8080/chatrooms/${selectedRoom.id}/members`, {
+        userIds: userIds
+      });
+      
+      // Refresh group members
+      await fetchGroupMembers();
+      
+      setShowAddMembersDialog(false);
+      setSelectedNewMembers([]);
+      setMemberSearchQuery('');
+    } catch (error) {
+      console.error('Failed to add members:', error);
+    }
+  };
+
+  const handleRemoveMember = async (memberId) => {
+    if (!selectedRoom) return;
+    
+    try {
+      await axios.delete(`http://localhost:8080/chatrooms/${selectedRoom.id}/members/${memberId}`);
+      
+      // Refresh group members
+      await fetchGroupMembers();
+    } catch (error) {
+      console.error('Failed to remove member:', error);
+    }
+  };
+
+  const handleLeaveGroup = async () => {
+    if (!selectedRoom) return;
+    
+    try {
+      await axios.delete(`http://localhost:8080/chatrooms/${selectedRoom.id}/members/${user.id}`);
+      
+      // Navigate back to chats
+      setMainView('chats');
+      setSelectedRoom(null);
+      
+      // Refresh chat rooms
+      await fetchChatRooms();
+    } catch (error) {
+      console.error('Failed to leave group:', error);
+    }
+  };
+
+  const handleDeleteGroup = async () => {
+    if (!selectedRoom) return;
+    
+    try {
+      await axios.delete(`http://localhost:8080/chatrooms/${selectedRoom.id}`);
+      
+      // Navigate back to chats
+      setMainView('chats');
+      setSelectedRoom(null);
+      
+      // Refresh chat rooms
+      await fetchChatRooms();
+    } catch (error) {
+      console.error('Failed to delete group:', error);
+    }
+  };
+
   // Auto-scroll to latest message when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, selectedRoom]);
+
+  // Fetch users when component mounts
+  useEffect(() => {
+    if (user) {
+      fetchUsers();
+    }
+  }, [user]);
+
+  // Debug: log when users are loaded
+  useEffect(() => {
+    console.log('Users loaded:', users.length, 'users');
+  }, [users]);
+
+  // Debug: log when mainView changes
+  useEffect(() => {
+    console.log('mainView changed to:', mainView);
+    console.log('selectedUserProfile:', selectedUserProfile);
+  }, [mainView, selectedUserProfile]);
+
+  // Initialize editing group name when dialog opens
+  useEffect(() => {
+    if (editingGroupName && selectedRoom) {
+      setEditingGroupNameValue(selectedRoom.name);
+    }
+  }, [editingGroupName, selectedRoom]);
 
   console.log('selectedRoom:', selectedRoom, 'mainView:', mainView, 'isMobile:', isMobile);
 
@@ -1138,18 +1356,61 @@ const Chat = () => {
               )}
               <Avatar
                 src={selectedRoom?.avatarUrl}
-                sx={{ width: 44, height: 44, mr: 2, cursor: 'pointer' }}
-                onClick={() => setMainView('settings')}
+                sx={{ 
+                  width: 44, 
+                  height: 44, 
+                  mr: 2, 
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.1)',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+                  }
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log('Avatar clicked!');
+                  handleProfileClick();
+                }}
               />
               <Typography
                 variant="h6"
-                sx={{ fontWeight: 600, cursor: 'pointer' }}
-                onClick={() => setMainView('settings')}
+                sx={{ 
+                  fontWeight: 600, 
+                  cursor: 'pointer',
+                  transition: 'color 0.2s',
+                  '&:hover': {
+                    color: 'primary.main',
+                    textDecoration: 'underline'
+                  }
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log('Username clicked!');
+                  handleProfileClick();
+                }}
               >
                 {selectedRoom?.name}
               </Typography>
             </Box>
             <Box>
+              <IconButton 
+                onClick={() => {
+                  alert('Test button clicked!');
+                  console.log('Test profile click!');
+                  console.log('Current mainView:', mainView);
+                  console.log('Current selectedRoom:', selectedRoom);
+                  handleProfileClick();
+                  // Force a re-render test
+                  setTimeout(() => {
+                    console.log('After 1 second - mainView:', mainView);
+                    console.log('After 1 second - selectedUserProfile:', selectedUserProfile);
+                  }, 1000);
+                }}
+                sx={{ mr: 1, bgcolor: 'warning.main', color: 'white' }}
+              >
+                👤
+              </IconButton>
               <IconButton onClick={() => setVideoCallOpen(true)}><DuoIcon /></IconButton>
               <IconButton onClick={() => setAudioCallOpen(true)}><CallIcon /></IconButton>
               <IconButton><SearchRoundedIcon /></IconButton>
@@ -1344,6 +1605,292 @@ const Chat = () => {
           />
         </Box>
       )}
+      {mainView === 'userProfile' && selectedUserProfile && (
+        <Box sx={{ 
+          height: '100vh', 
+          width: '100%', 
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <Box sx={{ p: 3, maxWidth: 600, mx: 'auto' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+              <IconButton onClick={() => setMainView('chats')} sx={{ mr: 2 }}>
+                <ArrowBackIcon />
+              </IconButton>
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                {selectedUserProfile.username}'s Profile
+              </Typography>
+            </Box>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Avatar 
+                src={selectedUserProfile.avatarUrl} 
+                sx={{ width: 120, height: 120, mx: 'auto', mb: 2 }}
+              />
+              <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
+                {selectedUserProfile.username}
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                {selectedUserProfile.email}
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 3 }}>
+                <Button 
+                  variant="contained" 
+                  onClick={() => {
+                    // Start a chat with this user
+                    setSelectedUser(selectedUserProfile);
+                    setMainView('chats');
+                    // Open the new chat dialog
+                    setNewChatMode('private');
+                    setOpenDialog(true);
+                  }}
+                >
+                  Send Message
+                </Button>
+                <Button variant="outlined">
+                  Block User
+                </Button>
+              </Box>
+            </Paper>
+          </Box>
+        </Box>
+      )}
+      {mainView === 'groupSettings' && selectedRoom && (
+        <Box sx={{ 
+          height: '100vh', 
+          width: '100%', 
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <Box sx={{ p: 3, maxWidth: 800, mx: 'auto' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+              <IconButton onClick={() => setMainView('chats')} sx={{ mr: 2 }}>
+                <ArrowBackIcon />
+              </IconButton>
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                Group Settings
+              </Typography>
+            </Box>
+            
+            {/* Group Info Section */}
+            <Paper sx={{ p: 3, mb: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Box sx={{ position: 'relative', mr: 3 }}>
+                  <Avatar 
+                    src={selectedRoom.avatarUrl} 
+                    sx={{ width: 100, height: 100 }}
+                  />
+                  <IconButton 
+                    sx={{ 
+                      position: 'absolute', 
+                      bottom: 0, 
+                      right: 0, 
+                      bgcolor: 'primary.main',
+                      color: 'white',
+                      '&:hover': { bgcolor: 'primary.dark' }
+                    }}
+                    onClick={() => document.getElementById('group-avatar-input').click()}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <input
+                    id="group-avatar-input"
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        handleUpdateGroupAvatar(file);
+                      }
+                    }}
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mr: 2 }}>
+                      {selectedRoom.name}
+                    </Typography>
+                    <IconButton 
+                      size="small" 
+                      onClick={() => setEditingGroupName(true)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    Group • {selectedRoom.members?.length || 0} members
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Created {selectedRoom.createdAt ? new Date(selectedRoom.createdAt).toLocaleDateString() : 'Unknown'}
+                  </Typography>
+                </Box>
+              </Box>
+              
+              {/* Edit Group Name Dialog */}
+              {editingGroupName && (
+                <Dialog open={editingGroupName} onClose={() => setEditingGroupName(false)}>
+                  <DialogTitle>Edit Group Name</DialogTitle>
+                  <DialogContent>
+                    <TextField
+                      fullWidth
+                      label="Group Name"
+                      value={editingGroupNameValue}
+                      onChange={(e) => setEditingGroupNameValue(e.target.value)}
+                      sx={getTextFieldStyles()}
+                      autoFocus
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setEditingGroupName(false)}>Cancel</Button>
+                    <Button 
+                      onClick={() => handleUpdateGroupName()}
+                      variant="contained"
+                      disabled={!editingGroupNameValue.trim()}
+                    >
+                      Save
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              )}
+            </Paper>
+
+            {/* Members Section */}
+            <Paper sx={{ p: 3, mb: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Members ({selectedRoom.members?.length || 0})
+                </Typography>
+                <Button 
+                  variant="outlined" 
+                  startIcon={<PersonAddIcon />}
+                  onClick={() => setShowAddMembersDialog(true)}
+                >
+                  Add Members
+                </Button>
+              </Box>
+              
+              <List>
+                {selectedRoom.members?.map((member) => (
+                  <ListItem key={member.id} sx={{ px: 0 }}>
+                    <ListItemAvatar>
+                      <Avatar src={member.avatarUrl} />
+                    </ListItemAvatar>
+                    <ListItemText 
+                      primary={member.username}
+                      secondary={member.id === user?.id ? 'You' : member.email}
+                    />
+                    {member.id !== user?.id && (
+                      <IconButton 
+                        color="error" 
+                        onClick={() => handleRemoveMember(member.id)}
+                      >
+                        <RemoveCircleIcon />
+                      </IconButton>
+                    )}
+                  </ListItem>
+                ))}
+              </List>
+            </Paper>
+
+            {/* Actions Section */}
+            <Paper sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                Actions
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Button 
+                  variant="outlined" 
+                  color="warning"
+                  startIcon={<NotificationsIcon />}
+                >
+                  Mute Notifications
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  color="info"
+                  startIcon={<SecurityIcon />}
+                >
+                  Privacy Settings
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  color="error"
+                  startIcon={<ExitToAppIcon />}
+                  onClick={() => handleLeaveGroup()}
+                >
+                  Leave Group
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  color="error"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => handleDeleteGroup()}
+                >
+                  Delete Group
+                </Button>
+              </Box>
+            </Paper>
+
+            {/* Add Members Dialog */}
+            <Dialog 
+              open={showAddMembersDialog} 
+              onClose={() => setShowAddMembersDialog(false)}
+              maxWidth="sm"
+              fullWidth
+            >
+              <DialogTitle>Add Members</DialogTitle>
+              <DialogContent>
+                <TextField
+                  fullWidth
+                  label="Search users"
+                  value={memberSearchQuery}
+                  onChange={(e) => setMemberSearchQuery(e.target.value)}
+                  sx={{ ...getTextFieldStyles(), mb: 2, mt: 1 }}
+                />
+                <List>
+                  {users
+                    .filter(u => 
+                      u.id !== user?.id && 
+                      !selectedRoom.members?.some(m => m.id === u.id) &&
+                      u.username.toLowerCase().includes(memberSearchQuery.toLowerCase())
+                    )
+                    .map((userItem) => (
+                      <ListItem key={userItem.id} sx={{ px: 0 }}>
+                        <ListItemAvatar>
+                          <Avatar src={userItem.avatarUrl} />
+                        </ListItemAvatar>
+                        <ListItemText 
+                          primary={userItem.username}
+                          secondary={userItem.email}
+                        />
+                        <Checkbox
+                          checked={selectedNewMembers.some(m => m.id === userItem.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedNewMembers([...selectedNewMembers, userItem]);
+                            } else {
+                              setSelectedNewMembers(selectedNewMembers.filter(m => m.id !== userItem.id));
+                            }
+                          }}
+                        />
+                      </ListItem>
+                    ))}
+                </List>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setShowAddMembersDialog(false)}>Cancel</Button>
+                <Button 
+                  onClick={() => handleAddMembers()}
+                  variant="contained"
+                  disabled={selectedNewMembers.length === 0}
+                >
+                  Add ({selectedNewMembers.length})
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 
@@ -1354,12 +1901,377 @@ const Chat = () => {
         selectedRoom ? chatAreaJSX : (
           mainView === 'contacts' ? <Contacts /> :
           mainView === 'settings' ? <Settings onClose={() => setMainView('chats')} isEmbedded={true} /> :
+          mainView === 'userProfile' && selectedUserProfile ? (
+            <Box sx={{ p: 3, maxWidth: 600, mx: 'auto' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <IconButton onClick={() => setMainView('chats')} sx={{ mr: 2 }}>
+                  <ArrowBackIcon />
+                </IconButton>
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                  {selectedUserProfile.username}'s Profile
+                </Typography>
+              </Box>
+              <Paper sx={{ p: 3, textAlign: 'center' }}>
+                <Avatar 
+                  src={selectedUserProfile.avatarUrl} 
+                  sx={{ width: 120, height: 120, mx: 'auto', mb: 2 }}
+                />
+                <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
+                  {selectedUserProfile.username}
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                  {selectedUserProfile.email}
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 3 }}>
+                  <Button 
+                    variant="contained" 
+                    onClick={() => {
+                      setSelectedUser(selectedUserProfile);
+                      handleCreatePrivateChat();
+                      setMainView('chats');
+                    }}
+                  >
+                    Send Message
+                  </Button>
+                  <Button variant="outlined">
+                    Block User
+                  </Button>
+                </Box>
+              </Paper>
+            </Box>
+          ) :
+          mainView === 'groupSettings' && selectedRoom ? (
+            <Box sx={{ p: 3, maxWidth: 800, mx: 'auto' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <IconButton onClick={() => setMainView('chats')} sx={{ mr: 2 }}>
+                  <ArrowBackIcon />
+                </IconButton>
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                  Group Settings
+                </Typography>
+              </Box>
+              <Paper sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <Avatar 
+                    src={selectedRoom.avatarUrl} 
+                    sx={{ width: 80, height: 80, mr: 3 }}
+                  />
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      {selectedRoom.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Group • {selectedRoom.members?.length || 0} members
+                    </Typography>
+                  </Box>
+                </Box>
+                <Divider sx={{ my: 2 }} />
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                  <Button variant="contained">
+                    Edit Group
+                  </Button>
+                  <Button variant="outlined">
+                    Add Members
+                  </Button>
+                  <Button variant="outlined" color="error">
+                    Leave Group
+                  </Button>
+                </Box>
+              </Paper>
+            </Box>
+          ) :
           sidebarJSX
         )
       ) : (
         <Box sx={{ display: 'flex', minWidth: 0, width: '100%', height: '100vh', minHeight: 0, overflowX: 'hidden' }}>
-          {sidebarJSX}
-          {chatAreaJSX}
+                    {mainView === 'userProfile' && selectedUserProfile ? (
+            <Box sx={{ 
+              height: '100vh', 
+              width: '100%', 
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <Box sx={{ p: 3, maxWidth: 600, mx: 'auto' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <IconButton onClick={() => setMainView('chats')} sx={{ mr: 2 }}>
+                    <ArrowBackIcon />
+                  </IconButton>
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    {selectedUserProfile.username}'s Profile
+                  </Typography>
+                </Box>
+                <Paper sx={{ p: 3, textAlign: 'center' }}>
+                  <Avatar 
+                    src={selectedUserProfile.avatarUrl} 
+                    sx={{ width: 120, height: 120, mx: 'auto', mb: 2 }}
+                  />
+                  <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
+                    {selectedUserProfile.username}
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                    {selectedUserProfile.email}
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 3 }}>
+                    <Button 
+                      variant="contained" 
+                      onClick={() => {
+                        setSelectedUser(selectedUserProfile);
+                        setMainView('chats');
+                        setNewChatMode('private');
+                        setOpenDialog(true);
+                      }}
+                    >
+                      Send Message
+                    </Button>
+                    <Button variant="outlined">
+                      Block User
+                    </Button>
+                  </Box>
+                </Paper>
+              </Box>
+            </Box>
+          ) : mainView === 'groupSettings' && selectedRoom ? (
+            <Box sx={{ 
+              height: '100vh', 
+              width: '100%', 
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <Box sx={{ p: 3, maxWidth: 800, mx: 'auto' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <IconButton onClick={() => setMainView('chats')} sx={{ mr: 2 }}>
+                    <ArrowBackIcon />
+                  </IconButton>
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    Group Settings
+                  </Typography>
+                </Box>
+                
+                {/* Group Info Section */}
+                <Paper sx={{ p: 3, mb: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                    <Box sx={{ position: 'relative', mr: 3 }}>
+                      <Avatar 
+                        src={selectedRoom.avatarUrl} 
+                        sx={{ width: 100, height: 100 }}
+                      />
+                      <IconButton 
+                        sx={{ 
+                          position: 'absolute', 
+                          bottom: 0, 
+                          right: 0, 
+                          bgcolor: 'primary.main',
+                          color: 'white',
+                          '&:hover': { bgcolor: 'primary.dark' }
+                        }}
+                        onClick={() => document.getElementById('group-avatar-input').click()}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <input
+                        id="group-avatar-input"
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            handleUpdateGroupAvatar(file);
+                          }
+                        }}
+                      />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 600, mr: 2 }}>
+                          {selectedRoom.name}
+                        </Typography>
+                        <IconButton 
+                          size="small" 
+                          onClick={() => setEditingGroupName(true)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        Group • {selectedRoom.members?.length || 0} members
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Created {selectedRoom.createdAt ? new Date(selectedRoom.createdAt).toLocaleDateString() : 'Unknown'}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  
+                  {/* Edit Group Name Dialog */}
+                  {editingGroupName && (
+                    <Dialog open={editingGroupName} onClose={() => setEditingGroupName(false)}>
+                      <DialogTitle>Edit Group Name</DialogTitle>
+                      <DialogContent>
+                        <TextField
+                          fullWidth
+                          label="Group Name"
+                          value={editingGroupNameValue}
+                          onChange={(e) => setEditingGroupNameValue(e.target.value)}
+                          sx={getTextFieldStyles()}
+                          autoFocus
+                        />
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={() => setEditingGroupName(false)}>Cancel</Button>
+                        <Button 
+                          onClick={() => handleUpdateGroupName()}
+                          variant="contained"
+                          disabled={!editingGroupNameValue.trim()}
+                        >
+                          Save
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                  )}
+                </Paper>
+
+                {/* Members Section */}
+                <Paper sx={{ p: 3, mb: 3 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      Members ({selectedRoom.members?.length || 0})
+                    </Typography>
+                    <Button 
+                      variant="outlined" 
+                      startIcon={<PersonAddIcon />}
+                      onClick={() => setShowAddMembersDialog(true)}
+                    >
+                      Add Members
+                    </Button>
+                  </Box>
+                  
+                  <List>
+                    {selectedRoom.members?.map((member) => (
+                      <ListItem key={member.id} sx={{ px: 0 }}>
+                        <ListItemAvatar>
+                          <Avatar src={member.avatarUrl} />
+                        </ListItemAvatar>
+                        <ListItemText 
+                          primary={member.username}
+                          secondary={member.id === user?.id ? 'You' : member.email}
+                        />
+                        {member.id !== user?.id && (
+                          <IconButton 
+                            color="error" 
+                            onClick={() => handleRemoveMember(member.id)}
+                          >
+                            <RemoveCircleIcon />
+                          </IconButton>
+                        )}
+                      </ListItem>
+                    ))}
+                  </List>
+                </Paper>
+
+                {/* Actions Section */}
+                <Paper sx={{ p: 3 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                    Actions
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Button 
+                      variant="outlined" 
+                      color="warning"
+                      startIcon={<NotificationsIcon />}
+                    >
+                      Mute Notifications
+                    </Button>
+                    <Button 
+                      variant="outlined" 
+                      color="info"
+                      startIcon={<SecurityIcon />}
+                    >
+                      Privacy Settings
+                    </Button>
+                    <Button 
+                      variant="outlined" 
+                      color="error"
+                      startIcon={<ExitToAppIcon />}
+                      onClick={() => handleLeaveGroup()}
+                    >
+                      Leave Group
+                    </Button>
+                    <Button 
+                      variant="outlined" 
+                      color="error"
+                      startIcon={<DeleteIcon />}
+                      onClick={() => handleDeleteGroup()}
+                    >
+                      Delete Group
+                    </Button>
+                  </Box>
+                </Paper>
+
+                {/* Add Members Dialog */}
+                <Dialog 
+                  open={showAddMembersDialog} 
+                  onClose={() => setShowAddMembersDialog(false)}
+                  maxWidth="sm"
+                  fullWidth
+                >
+                  <DialogTitle>Add Members</DialogTitle>
+                  <DialogContent>
+                    <TextField
+                      fullWidth
+                      label="Search users"
+                      value={memberSearchQuery}
+                      onChange={(e) => setMemberSearchQuery(e.target.value)}
+                      sx={{ ...getTextFieldStyles(), mb: 2, mt: 1 }}
+                    />
+                    <List>
+                      {users
+                        .filter(u => 
+                          u.id !== user?.id && 
+                          !selectedRoom.members?.some(m => m.id === u.id) &&
+                          u.username.toLowerCase().includes(memberSearchQuery.toLowerCase())
+                        )
+                        .map((userItem) => (
+                          <ListItem key={userItem.id} sx={{ px: 0 }}>
+                            <ListItemAvatar>
+                              <Avatar src={userItem.avatarUrl} />
+                            </ListItemAvatar>
+                            <ListItemText 
+                              primary={userItem.username}
+                              secondary={userItem.email}
+                            />
+                            <Checkbox
+                              checked={selectedNewMembers.some(m => m.id === userItem.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedNewMembers([...selectedNewMembers, userItem]);
+                                } else {
+                                  setSelectedNewMembers(selectedNewMembers.filter(m => m.id !== userItem.id));
+                                }
+                              }}
+                            />
+                          </ListItem>
+                        ))}
+                    </List>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setShowAddMembersDialog(false)}>Cancel</Button>
+                    <Button 
+                      onClick={() => handleAddMembers()}
+                      variant="contained"
+                      disabled={selectedNewMembers.length === 0}
+                    >
+                      Add ({selectedNewMembers.length})
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              </Box>
+            </Box>
+          ) : (
+            <>
+              {sidebarJSX}
+              {chatAreaJSX}
+            </>
+          )}
         </Box>
       )}
       {/* Dialogs */}

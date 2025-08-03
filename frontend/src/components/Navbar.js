@@ -29,7 +29,9 @@ import {
   Menu as MenuIcon,
   Home,
   Chat,
-  Settings
+  Settings,
+  Download,
+  AutoAwesome
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
@@ -48,6 +50,11 @@ const pulse = keyframes`
   50% { transform: scale(1.05); }
 `;
 
+const pwaPulse = keyframes`
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+`;
+
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const { mode, toggleMode } = useThemeMode();
@@ -59,6 +66,8 @@ function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [langAnchorEl, setLangAnchorEl] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showPWAInstall, setShowPWAInstall] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -88,6 +97,43 @@ function Navbar() {
   };
 
   const isActiveRoute = (path) => location.pathname === path;
+
+  // PWA Install functionality
+  React.useEffect(() => {
+    // Check if app is already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      return;
+    }
+
+    // Listen for beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowPWAInstall(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handlePWAInstall = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+      setShowPWAInstall(false);
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+    
+    setDeferredPrompt(null);
+  };
 
   const mobileMenuItems = [
     { text: 'Home', icon: <Home />, path: '/' },
@@ -160,6 +206,31 @@ function Navbar() {
           {/* Desktop Action Buttons */}
           {!isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {/* PWA Install Button */}
+              {showPWAInstall && (
+                <Tooltip title="Install Fyzoo App">
+                  <IconButton 
+                    color="inherit" 
+                    onClick={handlePWAInstall}
+                    sx={{
+                      background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: 2,
+                      transition: 'all 0.3s ease',
+                      animation: 'pwaPulse 2s infinite',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                        transform: 'translateY(-2px) scale(1.05)',
+                        boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)'
+                      }
+                    }}
+                  >
+                    <Download sx={{ color: 'white' }} />
+                  </IconButton>
+                </Tooltip>
+              )}
+
               {/* Language Switcher */}
               <Tooltip title="Change Language">
                 <IconButton 
@@ -425,6 +496,17 @@ function Navbar() {
           Logout
         </MenuItem>
       </Menu>
+
+      {/* CSS Animations */}
+      <style>
+        {`
+          @keyframes pwaPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+          }
+        `}
+      </style>
     </>
   );
 }

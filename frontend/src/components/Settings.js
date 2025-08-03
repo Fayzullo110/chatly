@@ -95,6 +95,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useThemeMode } from '../contexts/ThemeContext';
 import Profile from './Profile';
+import PWAStatus from './PWAStatus';
 
 // Keyframe animations
 const gradientShift = keyframes`
@@ -1072,6 +1073,37 @@ const Settings = ({ onClose, isEmbedded = false }) => {
                   </ListItemSecondaryAction>
                 </ListItem>
               </List>
+
+              {/* PWA Status Section */}
+              <Typography variant="h6" sx={{ color: 'white', mb: 3, mt: 4, fontWeight: 600 }}>PWA Status</Typography>
+              <Box sx={{ background: 'rgba(255,255,255,0.05)', borderRadius: 2, p: 2 }}>
+                <PWAStatus />
+                
+                {/* Manual PWA Install Test */}
+                <Box sx={{ mt: 3, p: 2, bgcolor: 'rgba(33, 150, 243, 0.1)', borderRadius: 2, border: '1px solid rgba(33, 150, 243, 0.2)' }}>
+                  <Typography variant="subtitle2" sx={{ color: 'white', mb: 2, fontWeight: 600 }}>
+                    Test PWA Installation
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', mb: 2 }}>
+                    If you don't see the install button, click here to test the PWA install prompt.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    startIcon={<Download />}
+                    onClick={() => {
+                      // Clear dismissal and show prompt
+                      localStorage.removeItem('pwa-prompt-dismissed');
+                      window.location.reload();
+                    }}
+                    sx={{
+                      bgcolor: '#2196f3',
+                      '&:hover': { bgcolor: '#1976d2' }
+                    }}
+                  >
+                    Show Install Prompt
+                  </Button>
+                </Box>
+              </Box>
             </TabPanel>
           </Box>
         </Paper>

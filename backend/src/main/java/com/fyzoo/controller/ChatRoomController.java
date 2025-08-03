@@ -292,10 +292,120 @@ public class ChatRoomController {
         );
     }
 
+    @PutMapping("/{roomId}/name")
+    public ResponseEntity<?> updateGroupName(
+            @PathVariable Long roomId,
+            @RequestBody UpdateGroupNameRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Optional<ChatRoom> roomOpt = chatRoomRepository.findById(roomId);
+        if (roomOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        ChatRoom room = roomOpt.get();
+        if (!room.getMembers().contains(userDetails.getUser())) {
+            return ResponseEntity.status(403).build();
+        }
+        if (room.getType() != ChatRoom.ChatRoomType.GROUP) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Can only update group names"));
+        }
+        if (request.name() == null || request.name().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Group name cannot be empty"));
+        }
+        room.setName(request.name().trim());
+        chatRoomRepository.save(room);
+        return ResponseEntity.ok(new RoomResponse(room.getId(), room.getName(), room.getCreatedAt(), room.getAvatarUrl()));
+    }
+
+    @PutMapping("/{roomId}/avatar")
+    public ResponseEntity<?> updateGroupAvatar(
+            @PathVariable Long roomId,
+            @RequestParam("avatar") MultipartFile avatar,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Optional<ChatRoom> roomOpt = chatRoomRepository.findById(roomId);
+        if (roomOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        ChatRoom room = roomOpt.get();
+        if (!room.getMembers().contains(userDetails.getUser())) {
+            return ResponseEntity.status(403).build();
+        }
+        if (room.getType() != ChatRoom.ChatRoomType.GROUP) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Can only update group avatars"));
+        }
+        try {
+            String fileName = UUID.randomUUID().toString() + "_" + avatar.getOriginalFilename();
+            Path uploadPath = Paths.get("uploads/avatars");
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(avatar.getInputStream(), filePath);
+            String avatarUrl = "/uploads/avatars/" + fileName;
+            room.setAvatarUrl(avatarUrl);
+            chatRoomRepository.save(room);
+            return ResponseEntity.ok(new RoomResponse(room.getId(), room.getName(), room.getCreatedAt(), room.getAvatarUrl()));
+        } catch (Exception e) {
+            logger.error("Failed to upload group avatar", e);
+            return ResponseEntity.internalServerError().body(new ErrorResponse("Failed to upload avatar"));
+        }
+    }
+
+    @PostMapping("/{roomId}/members")
+    public ResponseEntity<?> addMembersToGroup(
+            @PathVariable Long roomId,
+            @RequestBody AddMembersRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Optional<ChatRoom> roomOpt = chatRoomRepository.findById(roomId);
+        if (roomOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        ChatRoom room = roomOpt.get();
+        if (!room.getMembers().contains(userDetails.getUser())) {
+            return ResponseEntity.status(403).build();
+        }
+        if (room.getType() != ChatRoom.ChatRoomType.GROUP) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Can only add members to groups"));
+        }
+        for (Long userId : request.userIds()) {
+            Optional<User> userOpt = userRepository.findById(userId);
+            if (userOpt.isPresent()) {
+                room.getMembers().add(userOpt.get());
+            }
+        }
+        chatRoomRepository.save(room);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{roomId}/members/{memberId}")
+    public ResponseEntity<?> removeMemberFromGroup(
+            @PathVariable Long roomId,
+            @PathVariable Long memberId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Optional<ChatRoom> roomOpt = chatRoomRepository.findById(roomId);
+        if (roomOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        ChatRoom room = roomOpt.get();
+        if (!room.getMembers().contains(userDetails.getUser())) {
+            return ResponseEntity.status(403).build();
+        }
+        if (room.getType() != ChatRoom.ChatRoomType.GROUP) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Can only remove members from groups"));
+        }
+        Optional<User> memberOpt = userRepository.findById(memberId);
+        if (memberOpt.isPresent()) {
+            room.getMembers().remove(memberOpt.get());
+            chatRoomRepository.save(room);
+        }
+        return ResponseEntity.ok().build();
+    }
+
     public record CreateRoomRequest(String name) {}
     public record RoomResponse(Long id, String name, LocalDateTime createdAt, String avatarUrl) {}
     public record ErrorResponse(String error) {}
     public record PrivateRoomRequest(Long userId) {}
     public record GroupRoomRequest(String name, java.util.List<Long> userIds) {}
     public record MemberResponse(Long id, String username, String avatarUrl) {}
+    public record UpdateGroupNameRequest(String name) {}
+    public record AddMembersRequest(java.util.List<Long> userIds) {}
 } 

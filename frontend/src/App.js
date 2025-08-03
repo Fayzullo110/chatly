@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './AppRoutes';
 import { ThemeProviderCustom, useThemeMode } from './contexts/ThemeContext';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 // ErrorBoundary component
 class ErrorBoundary extends React.Component {
@@ -90,6 +91,7 @@ function ThemedApp() {
           <Router>
             <AuthProvider>
               <AppRoutes />
+              <PWAInstallPrompt />
             </AuthProvider>
           </Router>
         </ThemeProvider>
